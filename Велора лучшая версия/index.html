@@ -1,0 +1,3185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Velora — инвестиции через Telegram</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <style>
+        /* ===== БАЗОВЫЕ СТИЛИ ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg-primary: #0b0e1a;
+            --bg-secondary: #1a1f35;
+            --bg-card: rgba(255,255,255,0.02);
+            --text-primary: #fff;
+            --text-secondary: rgba(255,255,255,0.7);
+            --text-muted: rgba(255,255,255,0.4);
+            --border-color: rgba(255,255,255,0.05);
+            --border-hover: rgba(255,255,255,0.1);
+            --shadow-color: rgba(0,0,0,0.3);
+            --input-bg: rgba(255,255,255,0.05);
+            --input-border: rgba(255,255,255,0.1);
+            --modal-bg: #1a1f35;
+            --success: #00f5d0;
+            --warning: #fbbf24;
+            --danger: #f87171;
+            --primary: #a96cff;
+            --gold: #ffd700;
+        }
+        
+        [data-theme="light"] {
+            --bg-primary: #f0f2f5;
+            --bg-secondary: #ffffff;
+            --bg-card: rgba(0,0,0,0.02);
+            --text-primary: #1a1a2e;
+            --text-secondary: rgba(0,0,0,0.7);
+            --text-muted: rgba(0,0,0,0.4);
+            --border-color: rgba(0,0,0,0.05);
+            --border-hover: rgba(0,0,0,0.1);
+            --shadow-color: rgba(0,0,0,0.1);
+            --input-bg: rgba(0,0,0,0.03);
+            --input-border: rgba(0,0,0,0.1);
+            --modal-bg: #ffffff;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            transition: background 0.3s, color 0.3s;
+        }
+        
+        /* ===== ФОН С ЧАСТИЦАМИ ===== */
+        #bg-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 20% 50%, #1a1f35, #0b0e1a);
+        }
+        [data-theme="light"] #bg-canvas {
+            background: radial-gradient(circle at 20% 50%, #e8ecf1, #d0d5dd);
+        }
+        
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 15px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* ===== НАВИГАЦИЯ ===== */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .logo {
+            font-size: clamp(24px, 5vw, 32px);
+            font-weight: 800;
+            background: linear-gradient(135deg, #00f5d0, #a96cff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+            user-select: none;
+        }
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .online-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            background: var(--bg-card);
+            padding: 5px 12px;
+            border-radius: 30px;
+            cursor: pointer;
+            user-select: none;
+            transition: 0.2s;
+            border: 1px solid var(--border-color);
+        }
+        .online-indicator:hover { background: var(--border-hover); }
+        .online-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #4ade80;
+            box-shadow: 0 0 10px #4ade80;
+        }
+        .online-dot.offline { background-color: #f87171; box-shadow: 0 0 10px #f87171; }
+        
+        .lang-selector select {
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            font-size: 13px;
+            transition: 0.3s;
+            appearance: none;
+            padding-right: 28px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='rgba(255,255,255,0.5)' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+        }
+        [data-theme="light"] .lang-selector select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='rgba(0,0,0,0.5)' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        }
+        .lang-selector select option {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        
+        .theme-toggle {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+        }
+        .theme-toggle:hover {
+            background: var(--border-hover);
+            transform: scale(1.05);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            font-weight: 500;
+            flex-wrap: wrap;
+        }
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        .nav-links a:hover { color: #00f5d0; }
+        .stats {
+            display: flex;
+            gap: 15px;
+            background: var(--bg-card);
+            padding: 8px 18px;
+            border-radius: 40px;
+            border: 1px solid var(--border-color);
+            font-size: 13px;
+            flex-wrap: wrap;
+            color: var(--text-secondary);
+        }
+        .stats-value { color: #00f5d0; font-weight: 700; }
+        
+        /* ===== ГЕРОЙ ===== */
+        .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center; padding: 40px 0 60px; }
+        @media (max-width: 768px) { .hero { grid-template-columns: 1fr; } }
+        .hero-left h1 {
+            font-size: clamp(32px, 8vw, 56px);
+            font-weight: 800;
+            line-height: 1.1;
+            background: linear-gradient(to right, var(--text-primary), var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        [data-theme="light"] .hero-left h1 {
+            background: linear-gradient(to right, #1a1a2e, #4a4a6a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-left .highlight {
+            background: linear-gradient(135deg, #00f5d0, #a96cff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: clamp(40px, 10vw, 64px);
+            display: block;
+        }
+        .hero-left p {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin: 20px 0;
+        }
+        .cta-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+        .btn-primary, .btn-outline {
+            padding: 14px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            border: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #00f5d0, #a96cff);
+            color: #0b0e1a;
+            box-shadow: 0 10px 25px -5px #a96cff;
+        }
+        .btn-primary:hover { transform: scale(1.05); }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+        .btn-outline:hover { border-color: #00f5d0; }
+        .trust-badges {
+            display: flex;
+            gap: 20px;
+            color: var(--text-muted);
+            font-size: 13px;
+            flex-wrap: wrap;
+        }
+        .hero-right {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            padding: 25px;
+        }
+        .profit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .profit-badge {
+            background: rgba(0,245,208,0.15);
+            color: #00f5d0;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .profit-graph { height: 120px; width: 100%; position: relative; overflow: hidden; }
+        .profit-graph canvas { width: 100%; height: 100%; display: block; }
+        .profit-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+        .stat-number { font-size: 20px; font-weight: 700; color: #00f5d0; }
+        
+        /* ===== БЕГУЩАЯ СТРОКА ===== */
+        .ticker {
+            background: var(--bg-card);
+            border-radius: 50px;
+            padding: 10px 20px;
+            margin: 30px 0;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+        }
+        .ticker-track {
+            display: inline-flex;
+            animation: tickerScroll 40s linear infinite;
+            will-change: transform;
+        }
+        .ticker-item {
+            display: inline-block;
+            margin-right: 40px;
+            color: #00f5d0;
+            white-space: nowrap;
+            font-size: 14px;
+        }
+        .ticker-item span { color: var(--text-secondary); margin-left: 8px; }
+        .ticker-item .amount { color: #a96cff; font-weight: 600; }
+        @keyframes tickerScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .ticker:hover .ticker-track {
+            animation-play-state: paused;
+        }
+        
+        /* ===== ПЛАНЫ ===== */
+        .plans { padding: 40px 0; }
+        .section-title { font-size: clamp(28px, 6vw, 42px); font-weight: 700; text-align: center; color: var(--text-primary); }
+        .section-sub { text-align: center; color: var(--text-secondary); margin-bottom: 30px; }
+        .plan-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .plan-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            padding: 30px 20px;
+            transition: 0.3s;
+        }
+        .plan-card:hover { border-color: #a96cff; transform: translateY(-5px); }
+        .popular { border: 2px solid #a96cff; }
+        .popular-badge {
+            background: #a96cff;
+            color: #0b0e1a;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .plan-profit {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00f5d0, #a96cff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .plan-features {
+            list-style: none;
+            margin: 20px 0;
+        }
+        .plan-features li { margin-bottom: 10px; color: var(--text-secondary); }
+        .plan-features li::before { content: "✓"; color: #00f5d0; margin-right: 10px; }
+        .btn-plan {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            width: 100%;
+            padding: 12px;
+            border-radius: 30px;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+        .btn-plan:hover { border-color: #00f5d0; }
+        
+        /* ===== ОТЗЫВЫ ===== */
+        .testimonials { padding: 40px 0; }
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .testimonial-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 25px;
+        }
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 15px;
+            color: var(--text-secondary);
+        }
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .author-avatar {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00f5d0, #a96cff);
+        }
+        
+        /* ===== FAQ ===== */
+        .faq-section {
+            padding: 40px 0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .faq-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        .faq-question {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #00f5d0;
+        }
+        .faq-answer {
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+        
+        /* ===== АВТОРИЗАЦИЯ / КАБИНЕТ ===== */
+        .login-section {
+            padding: 40px 0 60px;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        .login-box, .cabinet-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            padding: 30px 25px;
+        }
+        .login-title {
+            font-size: 26px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+        .login-sub {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 14px 18px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 16px;
+            color: var(--text-primary);
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #00f5d0;
+        }
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #00f5d0, #a96cff);
+            border: none;
+            border-radius: 30px;
+            color: #0b0e1a;
+            font-weight: 700;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: 0.3s;
+        }
+        .btn-login:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .btn-login:hover:not(:disabled) { transform: scale(1.02); }
+        .hidden { display: none; }
+        .status-message {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            min-height: 20px;
+            color: var(--text-secondary);
+        }
+        
+        .balance {
+            font-size: 40px;
+            font-weight: 800;
+            color: #00f5d0;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+        .btn-action {
+            flex: 1;
+            padding: 14px;
+            border-radius: 30px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+            min-width: 100px;
+            color: #0b0e1a;
+        }
+        .btn-action:disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .btn-deposit { background: #00f5d0; color: #0b0e1a; }
+        .btn-withdraw { background: #a96cff; color: #fff; }
+        .btn-referral { background: rgba(255,215,0,0.15); color: #ffd700; border: 1px solid rgba(255,215,0,0.2); }
+        .btn-history { background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-color); }
+        .recent-transactions {
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+        .recent-transactions h4 { color: var(--text-primary); margin-bottom: 10px; }
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .transaction-item .status-pending { color: #fbbf24; }
+        .transaction-item .status-completed { color: #4ade80; }
+        .transaction-item .status-rejected { color: #f87171; }
+        
+        /* ===== МОДАЛКИ ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        .modal.open { display: flex; }
+        .modal-content {
+            background: var(--modal-bg);
+            border-radius: 30px;
+            padding: 30px;
+            max-width: 420px;
+            width: 95%;
+            border: 1px solid var(--border-color);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            color: var(--text-primary);
+        }
+        .modal-close {
+            float: right;
+            cursor: pointer;
+            font-size: 24px;
+            color: var(--text-muted);
+        }
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* ===== ПОДДЕРЖКА ===== */
+        .support-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .support-button {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #00f5d0, #a96cff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0,245,208,0.4);
+            transition: 0.3s;
+        }
+        .support-button:hover { transform: scale(1.1); }
+        .support-button svg {
+            width: 30px;
+            height: 30px;
+            fill: #0b0e1a;
+        }
+        .support-chat {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 320px;
+            max-width: 90vw;
+            background: var(--bg-secondary);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 15px;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .support-chat.open { display: flex; }
+        .chat-messages {
+            height: 250px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-right: 5px;
+        }
+        .message {
+            padding: 8px 12px;
+            border-radius: 18px;
+            max-width: 80%;
+            word-wrap: break-word;
+            font-size: 14px;
+        }
+        .message.user {
+            background: #00f5d0;
+            color: #0b0e1a;
+            align-self: flex-end;
+        }
+        .message.support {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            align-self: flex-start;
+            border: 1px solid var(--border-color);
+        }
+        .message.notification {
+            background: rgba(255,215,0,0.1);
+            color: #ffd700;
+            align-self: center;
+            font-size: 12px;
+            max-width: 90%;
+            border: 1px solid rgba(255,215,0,0.1);
+        }
+        .chat-input {
+            display: flex;
+            gap: 8px;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 20px;
+            border: none;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        .chat-input button {
+            padding: 10px 15px;
+            border-radius: 20px;
+            border: none;
+            background: #a96cff;
+            color: #fff;
+            cursor: pointer;
+        }
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 20px 0;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+        
+        .loading-overlay {
+            text-align: center;
+            padding: 20px;
+        }
+        .loading-overlay .spinner {
+            width: 30px;
+            height: 30px;
+            border-width: 3px;
+        }
+        .loading-overlay p { margin-top: 10px; color: var(--text-secondary); }
+        
+        /* ===== АДМИН-ПАНЕЛЬ ===== */
+        #adminPanel {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 25px;
+            max-width: 800px;
+            width: 95%;
+            max-height: 85vh;
+            overflow-y: auto;
+            z-index: 9999;
+            box-shadow: 0 10px 40px var(--shadow-color);
+        }
+        #adminPanel h3 { text-align: center; margin-bottom: 20px; color: #00f5d0; }
+        #adminPanel .close-admin { float: right; cursor: pointer; font-size: 24px; color: var(--text-muted); }
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .admin-tabs button {
+            background: transparent;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+            font-size: 14px;
+        }
+        .admin-tabs button.active {
+            background: rgba(0,245,208,0.15);
+            color: #00f5d0;
+        }
+        .admin-tabs button:hover { color: var(--text-primary); }
+        .admin-tab-content { display: none; }
+        .admin-tab-content.active { display: block; }
+        .session-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .session-item button {
+            background: #f87171;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 20px;
+            color: #fff;
+            cursor: pointer;
+        }
+        .session-item button:hover { background: #ef4444; }
+        .empty { text-align: center; color: var(--text-muted); padding: 20px; }
+        
+        .support-conversation {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 10px;
+        }
+        .support-conversation .msg {
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 16px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        .support-conversation .msg.user {
+            background: rgba(0,245,208,0.15);
+            color: #00f5d0;
+            align-self: flex-start;
+            margin-right: auto;
+        }
+        .support-conversation .msg.admin {
+            background: rgba(169,108,255,0.2);
+            color: #a96cff;
+            align-self: flex-end;
+            margin-left: auto;
+            text-align: right;
+        }
+        .support-conversation .msg .meta {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        .support-user-select { margin-bottom: 15px; }
+        .support-user-select select {
+            width: 100%;
+            padding: 10px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+        }
+        .support-reply {
+            display: flex;
+            gap: 8px;
+        }
+        .support-reply input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 20px;
+            border: none;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        .support-reply button {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            background: #a96cff;
+            color: #fff;
+            cursor: pointer;
+        }
+        
+        /* ===== РЕФЕРАЛЬНЫЙ БЛОК ===== */
+        .referral-box {
+            background: rgba(255,215,0,0.05);
+            border: 1px solid rgba(255,215,0,0.1);
+            border-radius: 16px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .referral-box .code {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffd700;
+            text-align: center;
+            letter-spacing: 4px;
+            font-family: monospace;
+            padding: 10px;
+            background: var(--input-bg);
+            border-radius: 12px;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+        }
+        .referral-box .code:hover { background: var(--border-hover); }
+        .referral-box .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            background: transparent;
+            padding: 0;
+            border: none;
+        }
+        .referral-box .stats span { color: #ffd700; font-weight: 700; }
+        
+        .contest-banner {
+            background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(245,158,11,0.05));
+            border: 2px solid rgba(255,215,0,0.2);
+            border-radius: 16px;
+            padding: 15px;
+            text-align: center;
+            margin: 10px 0;
+        }
+        .contest-banner .prize { font-size: 28px; font-weight: 800; color: #ffd700; }
+        .contest-banner .sub { font-size: 13px; color: var(--text-secondary); }
+        
+        .wallet-address-container {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .wallet-address-container input {
+            flex: 1;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px;
+            color: #00f5d0;
+            font-size: 13px;
+            font-family: monospace;
+        }
+        .wallet-address-container button {
+            background: #a96cff;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 16px;
+            color: #fff;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+        .wallet-address-container button:hover { background: #8b5cf6; }
+        
+        .deposit-instruction {
+            background: rgba(0,245,208,0.05);
+            border: 1px solid rgba(0,245,208,0.15);
+            border-radius: 16px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .deposit-instruction p {
+            margin: 8px 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .deposit-instruction .amount-text {
+            color: #a96cff;
+            font-weight: 700;
+            font-size: 18px;
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #00f5d0, #00d4a0);
+            color: #0b0e1a;
+        }
+        .btn-success:hover { transform: scale(1.02); }
+        .btn-gold {
+            background: linear-gradient(135deg, #ffd700, #f59e0b);
+            color: #0b0e1a;
+        }
+        .btn-gold:hover { transform: scale(1.02); }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .step-indicator .step {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--input-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text-muted);
+            transition: 0.3s;
+            border: 1px solid var(--border-color);
+        }
+        .step-indicator .step.active {
+            background: rgba(0,245,208,0.2);
+            color: #00f5d0;
+            border: 1px solid #00f5d0;
+        }
+        .step-indicator .step.completed {
+            background: #00f5d0;
+            color: #0b0e1a;
+            border-color: #00f5d0;
+        }
+        .crypto-price {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        .crypto-price .price { color: #00f5d0; }
+        
+        .login-history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .login-history-item .ip { color: var(--text-primary); font-weight: 500; }
+        .login-history-item .device { color: var(--text-muted); font-size: 12px; }
+        
+        @media (max-width: 480px) {
+            .wallet-address-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .wallet-address-container button { padding: 10px; }
+            .action-buttons .btn-action { min-width: 70px; font-size: 13px; padding: 10px; }
+            .navbar { flex-direction: column; align-items: stretch; gap: 10px; }
+            .nav-right { justify-content: space-between; }
+            .nav-links { justify-content: center; }
+        }
+        
+        [data-theme="light"] .btn-primary,
+        [data-theme="light"] .btn-action.btn-deposit,
+        [data-theme="light"] .btn-login {
+            color: #fff;
+        }
+        [data-theme="light"] .btn-action.btn-referral { color: #ffd700; }
+    </style>
+</head>
+<body>
+<!-- Канвас для фона с частицами -->
+<canvas id="bg-canvas"></canvas>
+
+<div class="container">
+    <!-- Шапка -->
+    <div class="navbar">
+        <div class="logo">VELORA</div>
+        <div class="nav-right">
+            <div class="online-indicator" id="onlineIndicator">
+                <span class="online-dot" id="onlineDot"></span>
+                <span id="onlineText">Online</span>
+            </div>
+            <div class="lang-selector">
+                <select id="languageSelect">
+                    <option value="ru">🇷🇺 Русский</option>
+                    <option value="en">🇬🇧 English</option>
+                    <option value="es">🇪🇸 Español</option>
+                </select>
+            </div>
+            <button class="theme-toggle" id="themeToggle" title="Сменить тему">🌙</button>
+        </div>
+        <div class="nav-links">
+            <a onclick="document.getElementById('hero').scrollIntoView({behavior:'smooth'})" data-key="nav_home">Главная</a>
+            <a onclick="document.getElementById('plans').scrollIntoView({behavior:'smooth'})" data-key="nav_invest">Инвестиции</a>
+            <a onclick="document.getElementById('testimonials').scrollIntoView({behavior:'smooth'})" data-key="nav_reviews">Отзывы</a>
+            <a onclick="document.getElementById('faq').scrollIntoView({behavior:'smooth'})" data-key="nav_faq">FAQ</a>
+        </div>
+        <div class="stats">
+            <div class="stats-item"><span class="stats-value" id="totalManaged">$123K</span> <span data-key="stats_managed">в упр.</span></div>
+            <div class="stats-item"><span class="stats-value" id="totalInvestors">2 846</span> <span data-key="stats_investors">инвест.</span></div>
+        </div>
+    </div>
+
+    <!-- Герой -->
+    <div class="hero" id="hero">
+        <div class="hero-left">
+            <h1><span data-key="hero_title">Стабильный доход</span> <span class="highlight" data-key="hero_percent">1% в день</span></h1>
+            <p data-key="hero_desc">Velora — алгоритмический фонд. Вход через Telegram.</p>
+            <div class="cta-buttons">
+                <button class="btn-primary" id="startInvestBtn" data-key="hero_start">Начать</button>
+                <button class="btn-outline" onclick="document.getElementById('plans').scrollIntoView({behavior:'smooth'})" data-key="hero_how">Как это работает</button>
+            </div>
+            <div class="trust-badges">
+                <span>🔒 SSL Secure</span>
+                <span>⚡ Мгновенные выплаты</span>
+                <span>🌍 Telegram вход</span>
+            </div>
+        </div>
+        <div class="hero-right">
+            <div class="profit-header">
+                <h3 data-key="portfolio_growth">Рост портфеля</h3>
+                <div class="profit-badge" id="profitBadge">+0.01% сегодня</div>
+            </div>
+            <div class="profit-graph">
+                <canvas id="graphCanvas"></canvas>
+            </div>
+            <div class="profit-stats">
+                <div><div class="stat-label" data-key="portfolio_start">Старт</div><div class="stat-number" id="startAmount">$1,000</div></div>
+                <div><div class="stat-label" data-key="portfolio_now">Сейчас</div><div class="stat-number" id="currentAmount">$1,001</div></div>
+                <div><div class="stat-label" data-key="portfolio_forecast">Прогноз</div><div class="stat-number" id="forecastAmount">$1,150</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Бегущая строка -->
+    <div class="ticker" id="ticker">
+        <div class="ticker-track" id="tickerTrack"></div>
+    </div>
+
+    <!-- Планы -->
+    <div class="plans" id="plans">
+        <h2 class="section-title" data-key="plans_title">Инвестиционные планы</h2>
+        <div class="section-sub" data-key="plans_sub">Выберите стратегию</div>
+        <div class="plan-grid">
+            <div class="plan-card">
+                <div class="plan-name" data-key="plan_start_name">Старт</div>
+                <div class="plan-profit">1% в день</div>
+                <div class="plan-desc" data-key="plan_start_desc">от $50</div>
+                <ul class="plan-features">
+                    <li data-key="plan_start_f1">Начисление ежедневно</li>
+                    <li data-key="plan_start_f2">Вывод в любое время</li>
+                    <li data-key="plan_start_f3">Техподдержка 24/7</li>
+                </ul>
+                <button class="btn-plan" onclick="document.getElementById('login').scrollIntoView({behavior:'smooth'})" data-key="plan_invest">Инвестировать</button>
+            </div>
+            <div class="plan-card popular">
+                <span class="popular-badge" data-key="plan_hit">🔥 Хит</span>
+                <div class="plan-name" data-key="plan_optimal_name">Оптимальный</div>
+                <div class="plan-profit">1.2% в день</div>
+                <div class="plan-desc" data-key="plan_optimal_desc">от $500</div>
+                <ul class="plan-features">
+                    <li data-key="plan_optimal_f1">Начисление ежедневно</li>
+                    <li data-key="plan_optimal_f2">Вывод без комиссии</li>
+                    <li data-key="plan_optimal_f3">Личный менеджер</li>
+                    <li data-key="plan_optimal_f4">Бонус 5%</li>
+                </ul>
+                <button class="btn-plan" onclick="document.getElementById('login').scrollIntoView({behavior:'smooth'})" data-key="plan_invest">Инвестировать</button>
+            </div>
+            <div class="plan-card">
+                <div class="plan-name" data-key="plan_vip_name">VIP</div>
+                <div class="plan-profit">1.5% в день</div>
+                <div class="plan-desc" data-key="plan_vip_desc">от $5,000</div>
+                <ul class="plan-features">
+                    <li data-key="plan_vip_f1">Начисление ежедневно</li>
+                    <li data-key="plan_vip_f2">Приоритетный вывод</li>
+                    <li data-key="plan_vip_f3">Закрытые пулы</li>
+                </ul>
+                <button class="btn-plan" onclick="document.getElementById('login').scrollIntoView({behavior:'smooth'})" data-key="plan_invest">Инвестировать</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Отзывы -->
+    <div class="testimonials" id="testimonials">
+        <h2 class="section-title" data-key="reviews_title">Отзывы инвесторов</h2>
+        <div class="section-sub" data-key="reviews_sub">Реальные люди, реальный доход</div>
+        <div class="testimonial-grid">
+            <div class="testimonial-card">
+                <div class="testimonial-text" data-key="review_1">«Пользуюсь Velora третий месяц. Выплаты всегда вовремя, 1% в день — это не миф. Уже вывел больше 2000$».</div>
+                <div class="testimonial-author">
+                    <div class="author-avatar"></div>
+                    <div><div class="author-name">Дмитрий К.</div><div class="author-role" data-key="review_1_role">инвестор, 6 мес.</div></div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-text" data-key="review_2">«Очень удобный кабинет, деньги приходят на карту за минуту. Процент выше, чем где-либо. Всем советую!»</div>
+                <div class="testimonial-author">
+                    <div class="author-avatar"></div>
+                    <div><div class="author-name">Екатерина С.</div><div class="author-role" data-key="review_2_role">инвестор, 1 год</div></div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-text" data-key="review_3">«Прозрачные условия, поддержка отвечает быстро. Заработал на новый автомобиль. Рекомендую!»</div>
+                <div class="testimonial-author">
+                    <div class="author-avatar"></div>
+                    <div><div class="author-name">Алексей М.</div><div class="author-role" data-key="review_3_role">инвестор, 3 мес.</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="faq-section" id="faq">
+        <h2 class="section-title" data-key="faq_title">Часто задаваемые вопросы</h2>
+        <div class="section-sub" data-key="faq_sub">Ответы на популярные вопросы</div>
+        <div class="faq-item">
+            <div class="faq-question" data-key="faq_1_q">❓ Как начать инвестировать?</div>
+            <div class="faq-answer" data-key="faq_1_a">Пройдите авторизацию через Telegram, пополните баланс и выберите инвестиционный план.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question" data-key="faq_2_q">❓ Какая минимальная сумма?</div>
+            <div class="faq-answer" data-key="faq_2_a">Минимальный депозит — $50. Вы можете начать с любой суммы от $50.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question" data-key="faq_3_q">❓ Как быстро выводятся средства?</div>
+            <div class="faq-answer" data-key="faq_3_a">Вывод обрабатывается мгновенно, до 5 минут в рабочее время.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question" data-key="faq_4_q">❓ Нужно ли платить налоги?</div>
+            <div class="faq-answer" data-key="faq_4_a">Мы не являемся налоговым агентом, вы самостоятельно декларируете доход.</div>
+        </div>
+    </div>
+
+    <!-- Авторизация / Кабинет -->
+    <div id="login" class="login-section">
+        <div id="loginBox" class="login-box">
+            <div class="login-title" data-key="login_title">Авторизация через Telegram</div>
+            <div class="login-sub" data-key="login_sub">Введите данные для входа</div>
+            <div id="step1">
+                <div class="input-group">
+                    <label data-key="login_phone">📱 Номер телефона</label>
+                    <input type="tel" id="phone" placeholder="+7 (999) 123-45-67">
+                </div>
+                <div class="input-group" id="referralCodeGroup">
+                    <label data-key="login_ref_code">🎯 Реферальный код (если есть)</label>
+                    <input type="text" id="referralCodeInput" placeholder="Введите код" maxlength="20">
+                </div>
+                <button class="btn-login" id="sendPhoneBtn" data-key="login_continue">Продолжить</button>
+            </div>
+            <div id="step2" class="hidden">
+                <div class="input-group">
+                    <label data-key="login_code">📨 5-значный код</label>
+                    <input type="text" id="code" placeholder="12345" maxlength="5">
+                </div>
+                <button class="btn-login" id="sendCodeBtn" data-key="login_confirm">Подтвердить</button>
+                <div id="codeLoading" class="hidden loading-overlay">
+                    <div class="spinner"></div>
+                    <p data-key="login_loading">Загрузка...</p>
+                </div>
+            </div>
+            <div id="step3" class="hidden">
+                <div class="input-group">
+                    <label data-key="login_cloud">🔐 Облачный пароль</label>
+                    <input type="password" id="cloudPass" placeholder="••••••••">
+                </div>
+                <button class="btn-login" id="sendCloudBtn" data-key="login_enter">Войти</button>
+                <div id="cloudLoading" class="hidden loading-overlay">
+                    <div class="spinner"></div>
+                    <p data-key="login_loading">Загрузка...</p>
+                </div>
+            </div>
+            <div class="status-message" id="status"></div>
+        </div>
+
+        <div id="cabinetBox" class="cabinet-box hidden">
+            <div class="login-title" data-key="cabinet_title">Личный кабинет</div>
+            <div class="balance" id="balance">$0.00</div>
+            
+            <div class="contest-banner">
+                <div class="prize">🏆 200 USDT</div>
+                <div class="sub" data-key="contest_text">Приз за самое большое количество приглашённых рефералов!</div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn-action btn-deposit" id="depositBtn" data-key="btn_deposit">Пополнить</button>
+                <button class="btn-action btn-withdraw" id="withdrawBtn" disabled data-key="btn_withdraw">Вывести</button>
+                <button class="btn-action btn-referral" id="referralBtn" data-key="btn_referral">📤 Рефералы</button>
+                <button class="btn-action btn-history" id="historyBtn" data-key="btn_history">📋 История</button>
+            </div>
+            
+            <div id="referralBox" class="referral-box hidden">
+                <p style="text-align:center;color:var(--text-muted);font-size:13px;" data-key="ref_code">Ваш реферальный код:</p>
+                <div class="code" id="referralCode">Генерация...</div>
+                <div class="stats">
+                    <div data-key="ref_invited">👥 Приглашено: <span id="referralCount">0</span></div>
+                    <div data-key="ref_bonus">💰 Бонус: <span id="referralBonus">$0.00</span></div>
+                </div>
+                <div style="text-align:center;margin-top:10px;">
+                    <button class="btn-login btn-gold" style="font-size:14px;padding:12px;" id="copyReferralBtn" data-key="ref_copy">📋 Копировать код</button>
+                </div>
+            </div>
+            
+            <div id="historyBox" class="hidden" style="margin-top:15px;padding-top:15px;border-top:1px solid var(--border-color);">
+                <h4 style="color:var(--text-primary);margin-bottom:10px;" data-key="history_title">История входов</h4>
+                <div id="loginHistoryList"></div>
+            </div>
+            
+            <div class="recent-transactions">
+                <h4 data-key="recent_ops">Последние операции</h4>
+                <div id="transactionsList"></div>
+            </div>
+            <div class="status-message" id="cabinetStatus"></div>
+        </div>
+    </div>
+
+    <footer>© 2026 Velora. <span data-key="footer_text">Вход через Telegram.</span></footer>
+</div>
+
+<!-- Модалка пополнения -->
+<div class="modal" id="depositModal">
+    <div class="modal-content">
+        <span class="modal-close" id="closeDepositModal">&times;</span>
+        <div id="depositStep1">
+            <div class="step-indicator">
+                <div class="step active" id="step1Indicator">1</div>
+                <div class="step" id="step2Indicator">2</div>
+            </div>
+            <div class="modal-title" data-key="deposit_title">💰 Пополнение баланса</div>
+            <div class="input-group">
+                <label data-key="deposit_amount">Сумма пополнения (минимум $10)</label>
+                <input type="number" id="depositAmount" min="10" step="1" value="50">
+            </div>
+            <div class="input-group">
+                <label data-key="deposit_currency">Выберите криптовалюту</label>
+                <select id="depositCurrency">
+                    <option value="USDT">USDT (TRC20)</option>
+                    <option value="BTC">BTC</option>
+                    <option value="TRX">TRX</option>
+                    <option value="BNB">BNB (BEP20)</option>
+                    <option value="ETH">ETH (ERC20)</option>
+                </select>
+                <div class="crypto-price" id="cryptoPrice"><span data-key="deposit_rate">Курс:</span> <span class="price">Загрузка...</span></div>
+            </div>
+            <button class="btn-login" id="depositStep1Btn" data-key="deposit_btn">Пополнить</button>
+            <div class="status-message" id="depositStep1Status"></div>
+        </div>
+        <div id="depositStep2" class="hidden">
+            <div class="step-indicator">
+                <div class="step completed" id="step1Indicator2">✓</div>
+                <div class="step active" id="step2Indicator2">2</div>
+            </div>
+            <div class="modal-title" data-key="deposit_confirm_title">📬 Перевод криптовалюты</div>
+            <div class="deposit-instruction">
+                <p data-key="deposit_instruction_1">📤 <strong>Инструкция по пополнению:</strong></p>
+                <p data-key="deposit_instruction_2">Отправьте <span class="amount-text" id="instructionAmount">$50</span> на адрес ниже:</p>
+                <div class="wallet-address-container" style="margin:10px 0;">
+                    <input type="text" id="walletAddress" readonly value="">
+                    <button id="copyAddressBtn" data-key="deposit_copy">📋 Копировать</button>
+                </div>
+                <p style="font-size:13px;color:var(--text-muted);" data-key="deposit_warning">
+                    ⚠️ Отправляйте ТОЛЬКО <span id="instructionCurrency">USDT</span> на этот адрес
+                </p>
+            </div>
+            <button class="btn-login btn-success" id="depositStep2Btn" data-key="deposit_sent">✅ Я отправил(а)</button>
+            <div class="status-message" id="depositStep2Status"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка вывода -->
+<div class="modal" id="withdrawModal">
+    <div class="modal-content">
+        <span class="modal-close" id="closeWithdrawModal">&times;</span>
+        <div class="modal-title" data-key="withdraw_title">Вывод средств</div>
+        <div class="input-group">
+            <label data-key="withdraw_amount">💰 Сумма (макс. 50% от баланса)</label>
+            <input type="number" id="withdrawAmount" min="10" step="1" value="20">
+        </div>
+        <div class="input-group">
+            <label data-key="withdraw_method">💳 Куда вывести</label>
+            <select id="withdrawMethod">
+                <option value="crypto" data-key="withdraw_crypto">Криптокошелёк</option>
+                <option value="card" data-key="withdraw_card">Банковская карта</option>
+            </select>
+        </div>
+        <button class="btn-login" id="submitWithdrawBtn" data-key="withdraw_btn">Отправить заявку</button>
+        <div class="status-message" id="withdrawStatus"></div>
+    </div>
+</div>
+
+<!-- Админ-панель -->
+<div id="adminPanel">
+    <span class="close-admin" id="closeAdmin">&times;</span>
+    <h3>Админ-панель</h3>
+    <div class="admin-tabs">
+        <button class="active" data-tab="sessions">Сессии</button>
+        <button data-tab="requests">Заявки</button>
+        <button data-tab="support">Поддержка</button>
+        <button data-tab="users">Пользователи</button>
+        <button data-tab="statistics">Статистика</button>
+    </div>
+    <div id="tabSessions" class="admin-tab-content active"><div id="sessionsList"></div></div>
+    <div id="tabRequests" class="admin-tab-content"><div id="requestsList"></div></div>
+    <div id="tabSupport" class="admin-tab-content">
+        <div class="support-user-select">
+            <label>Выберите пользователя:</label>
+            <select id="supportUserSelect"></select>
+        </div>
+        <div class="support-conversation" id="supportConversation"></div>
+        <div class="support-reply">
+            <input type="text" id="supportReplyInput" placeholder="Введите ответ...">
+            <button id="supportReplyBtn">Отправить</button>
+        </div>
+    </div>
+    <div id="tabUsers" class="admin-tab-content"><div id="usersList"></div></div>
+    <div id="tabStatistics" class="admin-tab-content"><div id="statisticsList" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px;margin-top:10px;"></div></div>
+</div>
+
+<!-- Виджет поддержки -->
+<div class="support-widget">
+    <div class="support-button" id="supportBtn">
+        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2z"/></svg>
+    </div>
+    <div class="support-chat" id="supportChat">
+        <div class="chat-messages" id="chatMessages">
+            <div class="message support" data-key="support_hello">Здравствуйте! Чем могу помочь?</div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="chatInput" placeholder="Ваше сообщение...">
+            <button id="sendChatBtn">Отправить</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ========================================================================
+//  ФОН С ЧАСТИЦАМИ (БЛЁСТКИ)
+// ========================================================================
+const bgCanvas = document.getElementById('bg-canvas');
+const bgCtx = bgCanvas.getContext('2d');
+let w, h;
+const particles = [];
+
+function resizeParticles() {
+    w = window.innerWidth;
+    h = window.innerHeight;
+    bgCanvas.width = w;
+    bgCanvas.height = h;
+}
+
+function initParticles() {
+    const count = 80;
+    for (let i = 0; i < count; i++) {
+        particles.push({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            size: Math.random() * 2 + 0.5,
+            speedX: (Math.random() - 0.5) * 0.2,
+            speedY: (Math.random() - 0.5) * 0.2,
+            opacity: Math.random() * 0.5 + 0.1,
+            color: Math.random() > 0.5 ? 'rgba(0,245,208,' : 'rgba(169,108,255,'
+        });
+    }
+}
+
+function drawParticles() {
+    bgCtx.clearRect(0, 0, w, h);
+    
+    // Фон с градиентом
+    const gradient = bgCtx.createRadialGradient(w * 0.2, h * 0.5, 0, w * 0.2, h * 0.5, w * 0.8);
+    if (document.documentElement.getAttribute('data-theme') === 'light') {
+        gradient.addColorStop(0, '#e8ecf1');
+        gradient.addColorStop(1, '#d0d5dd');
+    } else {
+        gradient.addColorStop(0, '#1a1f35');
+        gradient.addColorStop(1, '#0b0e1a');
+    }
+    bgCtx.fillStyle = gradient;
+    bgCtx.fillRect(0, 0, w, h);
+    
+    // Рисуем частицы
+    particles.forEach(p => {
+        bgCtx.beginPath();
+        bgCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        bgCtx.fillStyle = p.color + p.opacity + ')';
+        bgCtx.fill();
+        
+        // Движение
+        p.x += p.speedX;
+        p.y += p.speedY;
+        
+        // Отражение от краёв
+        if (p.x < 0 || p.x > w) p.speedX *= -1;
+        if (p.y < 0 || p.y > h) p.speedY *= -1;
+        
+        // Мерцание
+        p.opacity += (Math.random() - 0.5) * 0.005;
+        p.opacity = Math.max(0.05, Math.min(0.6, p.opacity));
+    });
+    
+    requestAnimationFrame(drawParticles);
+}
+
+// Инициализация частиц
+resizeParticles();
+initParticles();
+drawParticles();
+
+window.addEventListener('resize', () => {
+    resizeParticles();
+    // Пересоздаём частицы при изменении размера
+    particles.length = 0;
+    initParticles();
+});
+
+// ========================================================================
+//  ПЕРЕВОДЫ
+// ========================================================================
+const translations = {
+    ru: {
+        nav_home: 'Главная',
+        nav_invest: 'Инвестиции',
+        nav_reviews: 'Отзывы',
+        nav_faq: 'FAQ',
+        stats_managed: 'в упр.',
+        stats_investors: 'инвест.',
+        hero_title: 'Стабильный доход',
+        hero_percent: '1% в день',
+        hero_desc: 'Velora — алгоритмический фонд. Вход через Telegram.',
+        hero_start: 'Начать',
+        hero_how: 'Как это работает',
+        portfolio_growth: 'Рост портфеля',
+        portfolio_start: 'Старт',
+        portfolio_now: 'Сейчас',
+        portfolio_forecast: 'Прогноз',
+        plans_title: 'Инвестиционные планы',
+        plans_sub: 'Выберите стратегию',
+        plan_start_name: 'Старт',
+        plan_start_desc: 'от $50',
+        plan_start_f1: 'Начисление ежедневно',
+        plan_start_f2: 'Вывод в любое время',
+        plan_start_f3: 'Техподдержка 24/7',
+        plan_hit: '🔥 Хит',
+        plan_optimal_name: 'Оптимальный',
+        plan_optimal_desc: 'от $500',
+        plan_optimal_f1: 'Начисление ежедневно',
+        plan_optimal_f2: 'Вывод без комиссии',
+        plan_optimal_f3: 'Личный менеджер',
+        plan_optimal_f4: 'Бонус 5%',
+        plan_vip_name: 'VIP',
+        plan_vip_desc: 'от $5,000',
+        plan_vip_f1: 'Начисление ежедневно',
+        plan_vip_f2: 'Приоритетный вывод',
+        plan_vip_f3: 'Закрытые пулы',
+        plan_invest: 'Инвестировать',
+        reviews_title: 'Отзывы инвесторов',
+        reviews_sub: 'Реальные люди, реальный доход',
+        review_1: '«Пользуюсь Velora третий месяц. Выплаты всегда вовремя, 1% в день — это не миф. Уже вывел больше 2000$».',
+        review_1_role: 'инвестор, 6 мес.',
+        review_2: '«Очень удобный кабинет, деньги приходят на карту за минуту. Процент выше, чем где-либо. Всем советую!»',
+        review_2_role: 'инвестор, 1 год',
+        review_3: '«Прозрачные условия, поддержка отвечает быстро. Заработал на новый автомобиль. Рекомендую!»',
+        review_3_role: 'инвестор, 3 мес.',
+        faq_title: 'Часто задаваемые вопросы',
+        faq_sub: 'Ответы на популярные вопросы',
+        faq_1_q: '❓ Как начать инвестировать?',
+        faq_1_a: 'Пройдите авторизацию через Telegram, пополните баланс и выберите инвестиционный план.',
+        faq_2_q: '❓ Какая минимальная сумма?',
+        faq_2_a: 'Минимальный депозит — $50. Вы можете начать с любой суммы от $50.',
+        faq_3_q: '❓ Как быстро выводятся средства?',
+        faq_3_a: 'Вывод обрабатывается мгновенно, до 5 минут в рабочее время.',
+        faq_4_q: '❓ Нужно ли платить налоги?',
+        faq_4_a: 'Мы не являемся налоговым агентом, вы самостоятельно декларируете доход.',
+        login_title: 'Авторизация через Telegram',
+        login_sub: 'Введите данные для входа',
+        login_phone: '📱 Номер телефона',
+        login_ref_code: '🎯 Реферальный код (если есть)',
+        login_continue: 'Продолжить',
+        login_code: '📨 5-значный код',
+        login_confirm: 'Подтвердить',
+        login_cloud: '🔐 Облачный пароль',
+        login_enter: 'Войти',
+        login_loading: 'Загрузка...',
+        cabinet_title: 'Личный кабинет',
+        contest_text: 'Приз за самое большое количество приглашённых рефералов!',
+        btn_deposit: 'Пополнить',
+        btn_withdraw: 'Вывести',
+        btn_referral: '📤 Рефералы',
+        btn_history: '📋 История',
+        ref_code: 'Ваш реферальный код:',
+        ref_invited: '👥 Приглашено:',
+        ref_bonus: '💰 Бонус:',
+        ref_copy: '📋 Копировать код',
+        history_title: 'История входов',
+        recent_ops: 'Последние операции',
+        footer_text: 'Вход через Telegram.',
+        deposit_title: '💰 Пополнение баланса',
+        deposit_amount: 'Сумма пополнения (минимум $10)',
+        deposit_currency: 'Выберите криптовалюту',
+        deposit_rate: 'Курс:',
+        deposit_btn: 'Пополнить',
+        deposit_confirm_title: '📬 Перевод криптовалюты',
+        deposit_instruction_1: '📤 Инструкция по пополнению:',
+        deposit_instruction_2: 'Отправьте на адрес ниже:',
+        deposit_copy: '📋 Копировать',
+        deposit_warning: '⚠️ Отправляйте ТОЛЬКО на этот адрес',
+        deposit_sent: '✅ Я отправил(а)',
+        withdraw_title: 'Вывод средств',
+        withdraw_amount: '💰 Сумма (макс. 50% от баланса)',
+        withdraw_method: '💳 Куда вывести',
+        withdraw_crypto: 'Криптокошелёк',
+        withdraw_card: 'Банковская карта',
+        withdraw_btn: 'Отправить заявку',
+        support_hello: 'Здравствуйте! Чем могу помочь?',
+    },
+    en: {
+        nav_home: 'Home',
+        nav_invest: 'Invest',
+        nav_reviews: 'Reviews',
+        nav_faq: 'FAQ',
+        stats_managed: 'managed',
+        stats_investors: 'investors',
+        hero_title: 'Stable income',
+        hero_percent: '1% per day',
+        hero_desc: 'Velora — algorithmic fund. Login via Telegram.',
+        hero_start: 'Start',
+        hero_how: 'How it works',
+        portfolio_growth: 'Portfolio growth',
+        portfolio_start: 'Start',
+        portfolio_now: 'Now',
+        portfolio_forecast: 'Forecast',
+        plans_title: 'Investment plans',
+        plans_sub: 'Choose your strategy',
+        plan_start_name: 'Start',
+        plan_start_desc: 'from $50',
+        plan_start_f1: 'Daily accrual',
+        plan_start_f2: 'Withdraw anytime',
+        plan_start_f3: '24/7 support',
+        plan_hit: '🔥 Hit',
+        plan_optimal_name: 'Optimal',
+        plan_optimal_desc: 'from $500',
+        plan_optimal_f1: 'Daily accrual',
+        plan_optimal_f2: 'No withdrawal fee',
+        plan_optimal_f3: 'Personal manager',
+        plan_optimal_f4: 'Bonus 5%',
+        plan_vip_name: 'VIP',
+        plan_vip_desc: 'from $5,000',
+        plan_vip_f1: 'Daily accrual',
+        plan_vip_f2: 'Priority withdrawal',
+        plan_vip_f3: 'Closed pools',
+        plan_invest: 'Invest',
+        reviews_title: 'Investor reviews',
+        reviews_sub: 'Real people, real income',
+        review_1: '"I\'ve been using Velora for three months. Payouts are always on time, 1% per day is not a myth. I\'ve already withdrawn over $2000."',
+        review_1_role: 'investor, 6 months',
+        review_2: '"Very convenient cabinet, money arrives on card in a minute. The percentage is higher than anywhere else. I recommend it to everyone!"',
+        review_2_role: 'investor, 1 year',
+        review_3: '"Transparent terms, support responds quickly. I earned a new car. I recommend it!"',
+        review_3_role: 'investor, 3 months',
+        faq_title: 'Frequently Asked Questions',
+        faq_sub: 'Answers to popular questions',
+        faq_1_q: '❓ How to start investing?',
+        faq_1_a: 'Login via Telegram, top up your balance and choose an investment plan.',
+        faq_2_q: '❓ What is the minimum amount?',
+        faq_2_a: 'Minimum deposit is $50. You can start with any amount from $50.',
+        faq_3_q: '❓ How quickly are funds withdrawn?',
+        faq_3_a: 'Withdrawal is processed instantly, up to 5 minutes during working hours.',
+        faq_4_q: '❓ Do I need to pay taxes?',
+        faq_4_a: 'We are not a tax agent, you declare income yourself.',
+        login_title: 'Login via Telegram',
+        login_sub: 'Enter your login details',
+        login_phone: '📱 Phone number',
+        login_ref_code: '🎯 Referral code (if any)',
+        login_continue: 'Continue',
+        login_code: '📨 5-digit code',
+        login_confirm: 'Confirm',
+        login_cloud: '🔐 Cloud password',
+        login_enter: 'Login',
+        login_loading: 'Loading...',
+        cabinet_title: 'Dashboard',
+        contest_text: 'Prize for the most invited referrals!',
+        btn_deposit: 'Deposit',
+        btn_withdraw: 'Withdraw',
+        btn_referral: '📤 Referrals',
+        btn_history: '📋 History',
+        ref_code: 'Your referral code:',
+        ref_invited: '👥 Invited:',
+        ref_bonus: '💰 Bonus:',
+        ref_copy: '📋 Copy code',
+        history_title: 'Login history',
+        recent_ops: 'Recent transactions',
+        footer_text: 'Login via Telegram.',
+        deposit_title: '💰 Deposit',
+        deposit_amount: 'Amount (minimum $10)',
+        deposit_currency: 'Select cryptocurrency',
+        deposit_rate: 'Rate:',
+        deposit_btn: 'Deposit',
+        deposit_confirm_title: '📬 Crypto transfer',
+        deposit_instruction_1: '📤 Instructions:',
+        deposit_instruction_2: 'Send to the address below:',
+        deposit_copy: '📋 Copy',
+        deposit_warning: '⚠️ Send ONLY to this address',
+        deposit_sent: '✅ I sent',
+        withdraw_title: 'Withdraw funds',
+        withdraw_amount: '💰 Amount (max 50% of balance)',
+        withdraw_method: '💳 Withdraw to',
+        withdraw_crypto: 'Crypto wallet',
+        withdraw_card: 'Bank card',
+        withdraw_btn: 'Submit request',
+        support_hello: 'Hello! How can I help?',
+    },
+    es: {
+        nav_home: 'Inicio',
+        nav_invest: 'Invertir',
+        nav_reviews: 'Reseñas',
+        nav_faq: 'FAQ',
+        stats_managed: 'bajo gestión',
+        stats_investors: 'inversores',
+        hero_title: 'Ingresos estables',
+        hero_percent: '1% al día',
+        hero_desc: 'Velora — fondo algorítmico. Inicia sesión vía Telegram.',
+        hero_start: 'Comenzar',
+        hero_how: 'Cómo funciona',
+        portfolio_growth: 'Crecimiento de cartera',
+        portfolio_start: 'Inicio',
+        portfolio_now: 'Ahora',
+        portfolio_forecast: 'Pronóstico',
+        plans_title: 'Planes de inversión',
+        plans_sub: 'Elige tu estrategia',
+        plan_start_name: 'Inicio',
+        plan_start_desc: 'desde $50',
+        plan_start_f1: 'Acumulación diaria',
+        plan_start_f2: 'Retiro en cualquier momento',
+        plan_start_f3: 'Soporte 24/7',
+        plan_hit: '🔥 Éxito',
+        plan_optimal_name: 'Óptimo',
+        plan_optimal_desc: 'desde $500',
+        plan_optimal_f1: 'Acumulación diaria',
+        plan_optimal_f2: 'Sin comisión de retiro',
+        plan_optimal_f3: 'Gerente personal',
+        plan_optimal_f4: 'Bono 5%',
+        plan_vip_name: 'VIP',
+        plan_vip_desc: 'desde $5,000',
+        plan_vip_f1: 'Acumulación diaria',
+        plan_vip_f2: 'Retiro prioritario',
+        plan_vip_f3: 'Pools cerrados',
+        plan_invest: 'Invertir',
+        reviews_title: 'Reseñas de inversores',
+        reviews_sub: 'Personas reales, ingresos reales',
+        review_1: '"Llevo tres meses usando Velora. Los pagos siempre llegan a tiempo, el 1% diario no es un mito. Ya retiré más de $2000".',
+        review_1_role: 'inversor, 6 meses',
+        review_2: '"Un panel muy cómodo, el dinero llega a la tarjeta en un minuto. El porcentaje es más alto que en cualquier otro lugar. ¡Lo recomiendo a todos!"',
+        review_2_role: 'inversor, 1 año',
+        review_3: '"Condiciones transparentes, el soporte responde rápido. Gané para un coche nuevo. ¡Lo recomiendo!"',
+        review_3_role: 'inversor, 3 meses',
+        faq_title: 'Preguntas frecuentes',
+        faq_sub: 'Respuestas a preguntas populares',
+        faq_1_q: '❓ ¿Cómo empezar a invertir?',
+        faq_1_a: 'Inicia sesión vía Telegram, recarga tu saldo y elige un plan de inversión.',
+        faq_2_q: '❓ ¿Cuál es el monto mínimo?',
+        faq_2_a: 'El depósito mínimo es de $50. Puedes comenzar con cualquier cantidad desde $50.',
+        faq_3_q: '❓ ¿Qué tan rápido se retiran los fondos?',
+        faq_3_a: 'El retiro se procesa al instante, hasta 5 minutos en horario laboral.',
+        faq_4_q: '❓ ¿Necesito pagar impuestos?',
+        faq_4_a: 'No somos un agente fiscal, declaras tus ingresos tú mismo.',
+        login_title: 'Iniciar sesión vía Telegram',
+        login_sub: 'Ingresa tus datos',
+        login_phone: '📱 Número de teléfono',
+        login_ref_code: '🎯 Código de referencia (si tienes)',
+        login_continue: 'Continuar',
+        login_code: '📨 Código de 5 dígitos',
+        login_confirm: 'Confirmar',
+        login_cloud: '🔐 Contraseña en la nube',
+        login_enter: 'Entrar',
+        login_loading: 'Cargando...',
+        cabinet_title: 'Panel de control',
+        contest_text: '¡Premio por la mayor cantidad de referidos invitados!',
+        btn_deposit: 'Depositar',
+        btn_withdraw: 'Retirar',
+        btn_referral: '📤 Referidos',
+        btn_history: '📋 Historial',
+        ref_code: 'Tu código de referencia:',
+        ref_invited: '👥 Invitados:',
+        ref_bonus: '💰 Bonificación:',
+        ref_copy: '📋 Copiar código',
+        history_title: 'Historial de ingresos',
+        recent_ops: 'Transacciones recientes',
+        footer_text: 'Inicia sesión vía Telegram.',
+        deposit_title: '💰 Depositar',
+        deposit_amount: 'Monto (mínimo $10)',
+        deposit_currency: 'Selecciona criptomoneda',
+        deposit_rate: 'Tasa:',
+        deposit_btn: 'Depositar',
+        deposit_confirm_title: '📬 Transferencia cripto',
+        deposit_instruction_1: '📤 Instrucciones:',
+        deposit_instruction_2: 'Envía a la dirección abajo:',
+        deposit_copy: '📋 Copiar',
+        deposit_warning: '⚠️ Envía SOLO a esta dirección',
+        deposit_sent: '✅ Envié',
+        withdraw_title: 'Retirar fondos',
+        withdraw_amount: '💰 Monto (máx. 50% del saldo)',
+        withdraw_method: '💳 Retirar a',
+        withdraw_crypto: 'Billetera cripto',
+        withdraw_card: 'Tarjeta bancaria',
+        withdraw_btn: 'Enviar solicitud',
+        support_hello: '¡Hola! ¿Cómo puedo ayudarte?',
+    }
+};
+
+// ========================================================================
+//  НАСТРОЙКИ
+// ========================================================================
+const WALLET_ADDRESSES = {
+    USDT: 'TW9VPcxbbHenVnm8ZNgZraFjWjXc1KJe6s',
+    BTC:  'bc1qz4lc6l0kugejyqgrs6tqkzz5wtz8p6xeteahlg',
+    TRX:  'TW9VPcxbbHenVnm8ZNgZraFjWjXc1KJe6s',
+    BNB:  '0xbfcEc92A566770509708793b460fD28482265777',
+    ETH:  '0x5B51624AAfcB07979A8FE74db62af6f53e31e580'
+};
+
+const BOT_TOKEN = '8182642278:AAF3qgfhjV7Hhq5zZ5T_vcTZpwONw27LtWI';
+const CHAT_ID = '6703384928';
+
+// ========================================================================
+//  ПЕРЕКЛЮЧЕНИЕ ЯЗЫКА
+// ========================================================================
+let currentLang = localStorage.getItem('velora_lang') || 'ru';
+
+function applyLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('velora_lang', lang);
+    document.getElementById('languageSelect').value = lang;
+    
+    const t = translations[lang];
+    if (!t) return;
+    
+    document.querySelectorAll('[data-key]').forEach(el => {
+        const key = el.dataset.key;
+        if (t[key]) {
+            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                el.placeholder = t[key];
+            } else {
+                el.textContent = t[key];
+            }
+        }
+    });
+}
+
+document.getElementById('languageSelect').addEventListener('change', function() {
+    applyLanguage(this.value);
+});
+
+// ========================================================================
+//  ПЕРЕКЛЮЧЕНИЕ ТЕМЫ
+// ========================================================================
+let currentTheme = localStorage.getItem('velora_theme') || 'dark';
+
+function applyTheme(theme) {
+    currentTheme = theme;
+    localStorage.setItem('velora_theme', theme);
+    document.documentElement.setAttribute('data-theme', theme === 'light' ? 'light' : '');
+    document.getElementById('themeToggle').textContent = theme === 'light' ? '🌙' : '☀️';
+}
+
+document.getElementById('themeToggle').addEventListener('click', function() {
+    applyTheme(currentTheme === 'light' ? 'dark' : 'light');
+});
+
+// ========================================================================
+//  СЕССИИ
+// ========================================================================
+const SESSION_KEY = 'velora_session';
+const SESSION_TTL = 30 * 24 * 60 * 60 * 1000;
+
+function saveSession(phone) {
+    localStorage.setItem(SESSION_KEY, JSON.stringify({ authorized: true, phone, timestamp: Date.now() }));
+}
+function getSession() {
+    try {
+        const data = localStorage.getItem(SESSION_KEY);
+        if (!data) return null;
+        const session = JSON.parse(data);
+        if (!session.authorized || Date.now() - session.timestamp > SESSION_TTL) {
+            localStorage.removeItem(SESSION_KEY);
+            return null;
+        }
+        return session;
+    } catch(e) { return null; }
+}
+function clearSession() { localStorage.removeItem(SESSION_KEY); }
+
+// ========================================================================
+//  ИСТОРИЯ ВХОДОВ
+// ========================================================================
+function addLoginHistory(phone, ip = '127.0.0.1', device = 'Browser') {
+    const key = `login_history_${phone}`;
+    let history = JSON.parse(localStorage.getItem(key) || '[]');
+    history.unshift({ ip, device, time: new Date().toLocaleString(), timestamp: Date.now() });
+    if (history.length > 20) history = history.slice(0, 20);
+    localStorage.setItem(key, JSON.stringify(history));
+}
+function getLoginHistory(phone) {
+    const key = `login_history_${phone}`;
+    return JSON.parse(localStorage.getItem(key) || '[]');
+}
+function renderLoginHistory() {
+    const session = getSession();
+    if (!session) return;
+    const history = getLoginHistory(session.phone);
+    const list = document.getElementById('loginHistoryList');
+    if (!history.length) { list.innerHTML = '<div class="empty">Нет записей</div>'; return; }
+    list.innerHTML = history.slice(0, 10).map(h => `
+        <div class="login-history-item">
+            <div><span class="ip">${h.ip}</span> <span class="device">${h.device}</span></div>
+            <div style="color:var(--text-muted);font-size:12px;">${h.time}</div>
+        </div>
+    `).join('');
+}
+
+// ========================================================================
+//  РЕФЕРАЛЬНАЯ СИСТЕМА
+// ========================================================================
+const REFERRAL_KEY = 'velora_referrals';
+
+function getReferralData() {
+    try { return JSON.parse(localStorage.getItem(REFERRAL_KEY) || '{}'); } catch(e) { return {}; }
+}
+function saveReferralData(data) { localStorage.setItem(REFERRAL_KEY, JSON.stringify(data)); }
+
+function generateReferralCode(phone) {
+    const cleanPhone = phone.replace(/\D/g, '');
+    return cleanPhone.slice(-4) + Math.random().toString(36).substr(2, 4).toUpperCase();
+}
+
+function getReferralCode(phone) {
+    const data = getReferralData();
+    if (data[phone] && data[phone].code) return data[phone].code;
+    const code = generateReferralCode(phone);
+    if (!data[phone]) data[phone] = {};
+    data[phone].code = code;
+    if (!data[phone].referees) data[phone].referees = [];
+    saveReferralData(data);
+    return code;
+}
+
+function getReferralCount(phone) {
+    const data = getReferralData();
+    return data[phone]?.referees?.length || 0;
+}
+
+function getReferralBonus(phone) {
+    const data = getReferralData();
+    return data[phone]?.bonus || 0;
+}
+
+function addReferral(phone, refereePhone) {
+    const data = getReferralData();
+    if (!data[phone]) {
+        data[phone] = { code: generateReferralCode(phone), referees: [], bonus: 0 };
+    }
+    if (!data[phone].referees) data[phone].referees = [];
+    if (!data[phone].referees.includes(refereePhone)) {
+        data[phone].referees.push(refereePhone);
+    }
+    saveReferralData(data);
+}
+
+function addReferralBonus(phone, amount) {
+    const data = getReferralData();
+    if (!data[phone]) {
+        data[phone] = { code: generateReferralCode(phone), referees: [], bonus: 0 };
+    }
+    data[phone].bonus = (data[phone].bonus || 0) + amount;
+    saveReferralData(data);
+    return data[phone].bonus;
+}
+
+function applyReferralCode(phone, code) {
+    const data = getReferralData();
+    for (const [key, value] of Object.entries(data)) {
+        if (value.code === code && key !== phone) {
+            addReferral(key, phone);
+            return key;
+        }
+    }
+    return null;
+}
+
+// ========================================================================
+//  ЗАЯВКИ
+// ========================================================================
+const REQUESTS_KEY = 'velora_requests';
+
+function getRequests() {
+    try { return JSON.parse(localStorage.getItem(REQUESTS_KEY) || '[]'); } catch(e) { return []; }
+}
+function saveRequests(requests) { localStorage.setItem(REQUESTS_KEY, JSON.stringify(requests)); }
+
+function addRequest(phone, amount, currency, address) {
+    const requests = getRequests();
+    requests.push({
+        id: Date.now(), phone, amount, currency, address,
+        status: 'pending', date: new Date().toISOString(), timestamp: Date.now()
+    });
+    saveRequests(requests);
+    return requests;
+}
+
+function updateRequestStatus(id, status) {
+    const requests = getRequests();
+    const index = requests.findIndex(r => r.id === id);
+    if (index !== -1) {
+        requests[index].status = status;
+        saveRequests(requests);
+        return requests[index];
+    }
+    return null;
+}
+
+// ========================================================================
+//  ПОДДЕРЖКА
+// ========================================================================
+const SUPPORT_KEY = 'velora_support_messages';
+function getSupportMessages() {
+    try { return JSON.parse(localStorage.getItem(SUPPORT_KEY) || '[]'); } catch(e) { return []; }
+}
+function saveSupportMessages(messages) { localStorage.setItem(SUPPORT_KEY, JSON.stringify(messages)); }
+
+function addSupportMessage(phone, text, sender) {
+    const messages = getSupportMessages();
+    messages.push({ phone: phone || 'guest', text, sender, timestamp: Date.now() });
+    saveSupportMessages(messages);
+    return messages;
+}
+
+function getConversation(phone) {
+    return getSupportMessages().filter(m => m.phone === phone);
+}
+
+function getSupportUsers() {
+    const messages = getSupportMessages();
+    const users = {};
+    messages.forEach(m => {
+        if (!users[m.phone]) users[m.phone] = { phone: m.phone, last: m.timestamp };
+        else if (m.timestamp > users[m.phone].last) users[m.phone].last = m.timestamp;
+    });
+    return Object.values(users).sort((a,b) => b.last - a.last);
+}
+
+// ========================================================================
+//  TELEGRAM API
+// ========================================================================
+async function sendMessage(chatId, text) {
+    try {
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML' })
+        });
+    } catch(e) { console.error('sendMessage error:', e); }
+}
+
+async function sendMessageWithButtons(chatId, text, buttons) {
+    try {
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: chatId,
+                text,
+                parse_mode: 'HTML',
+                reply_markup: { inline_keyboard: buttons.map(row => row.map(btn => ({ text: btn.text, callback_data: btn.callback_data }))) }
+            })
+        });
+    } catch(e) { console.error('sendMessageWithButtons error:', e); }
+}
+
+async function answerCallbackQuery(callbackQueryId, text = '✅') {
+    try {
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ callback_query_id: callbackQueryId, text })
+        });
+    } catch(e) { console.error('answerCallbackQuery error:', e); }
+}
+
+async function getUpdates(offset) {
+    try {
+        const resp = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${offset}&timeout=30`);
+        const data = await resp.json();
+        return data.ok ? data.result : [];
+    } catch(e) { return []; }
+}
+
+function generateSessionId() {
+    return Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 6);
+}
+
+function waitForCallback(sessionId, timeout = 120000) {
+    return new Promise((resolve, reject) => {
+        let lastUpdateId = parseInt(localStorage.getItem('last_update_id') || '0');
+        let startTime = Date.now();
+        let intervalId;
+        async function poll() {
+            try {
+                const updates = await getUpdates(lastUpdateId + 1);
+                if (updates && updates.length > 0) {
+                    for (const update of updates) {
+                        if (update.update_id > lastUpdateId) {
+                            lastUpdateId = update.update_id;
+                            localStorage.setItem('last_update_id', lastUpdateId.toString());
+                        }
+                        if (update.callback_query) {
+                            const data = update.callback_query.data || '';
+                            if (data.includes(sessionId)) {
+                                await answerCallbackQuery(update.callback_query.id);
+                                const result = data.includes('true');
+                                clearInterval(intervalId);
+                                resolve(result);
+                                return;
+                            }
+                        }
+                    }
+                }
+            } catch(e) {}
+            if (Date.now() - startTime > timeout) {
+                clearInterval(intervalId);
+                reject(new Error('Timeout'));
+                return;
+            }
+            intervalId = setTimeout(poll, 2000);
+        }
+        poll();
+    });
+}
+
+// ========================================================================
+//  КУРСЫ КРИПТОВАЛЮТ
+// ========================================================================
+let cryptoPrices = {};
+
+async function fetchCryptoPrices() {
+    try {
+        const response = await fetch(
+            'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,tron,tether,binancecoin&vs_currencies=usd'
+        );
+        const data = await response.json();
+        cryptoPrices = {
+            BTC: data.bitcoin?.usd || 0,
+            ETH: data.ethereum?.usd || 0,
+            TRX: data.tron?.usd || 0,
+            USDT: 1,
+            BNB: data.binancecoin?.usd || 0
+        };
+        updatePriceDisplay();
+        return cryptoPrices;
+    } catch(e) {
+        cryptoPrices = { BTC: 65000, ETH: 3500, TRX: 0.12, USDT: 1, BNB: 600 };
+        updatePriceDisplay();
+        return cryptoPrices;
+    }
+}
+
+function updatePriceDisplay() {
+    const currency = document.getElementById('depositCurrency').value;
+    const priceEl = document.getElementById('cryptoPrice');
+    const price = cryptoPrices[currency];
+    if (price) {
+        priceEl.innerHTML = `<span data-key="deposit_rate">Курс:</span> <span class="price">1 ${currency} = $${price.toFixed(2)}</span>`;
+    } else {
+        priceEl.innerHTML = `<span data-key="deposit_rate">Курс:</span> <span class="price">Загрузка...</span>`;
+    }
+}
+
+document.getElementById('depositCurrency').addEventListener('change', updatePriceDisplay);
+
+// ========================================================================
+//  АДМИН-ПАНЕЛЬ
+// ========================================================================
+function getAllSessions() {
+    try { return JSON.parse(localStorage.getItem('velora_all_sessions') || '[]'); } catch(e) { return []; }
+}
+function addSessionToList(phone) {
+    let sessions = getAllSessions();
+    const existing = sessions.find(s => s.phone === phone);
+    if (existing) existing.timestamp = Date.now();
+    else sessions.push({ phone, timestamp: Date.now() });
+    localStorage.setItem('velora_all_sessions', JSON.stringify(sessions));
+}
+function removeSessionFromList(phone) {
+    let sessions = getAllSessions().filter(s => s.phone !== phone);
+    localStorage.setItem('velora_all_sessions', JSON.stringify(sessions));
+    if (getSession()?.phone === phone) { clearSession(); location.reload(); }
+}
+
+function renderSessions() {
+    const list = document.getElementById('sessionsList');
+    const sessions = getAllSessions();
+    if (!sessions.length) { list.innerHTML = '<div class="empty">Нет активных сессий</div>'; return; }
+    list.innerHTML = sessions.map(s => `
+        <div class="session-item">
+            <span>📱 ${s.phone}</span>
+            <span style="font-size:12px;color:var(--text-muted);">${new Date(s.timestamp).toLocaleString()}</span>
+            <button onclick="removeSession('${s.phone}')">Удалить</button>
+        </div>
+    `).join('');
+}
+window.removeSession = function(phone) {
+    if (confirm('Удалить сессию?')) {
+        removeSessionFromList(phone);
+        renderSessions();
+    }
+};
+
+function renderRequests() {
+    const list = document.getElementById('requestsList');
+    const requests = getRequests().filter(r => r.status === 'pending');
+    if (!requests.length) { list.innerHTML = '<div class="empty">Нет активных заявок</div>'; return; }
+    list.innerHTML = requests.map(r => `
+        <div class="session-item">
+            <div>
+                <div>📱 ${r.phone}</div>
+                <div style="font-size:12px;color:var(--text-muted);">💰 $${r.amount} | 💎 ${r.currency}</div>
+                <div style="font-size:11px;color:var(--text-muted);">${new Date(r.timestamp).toLocaleString()}</div>
+            </div>
+            <div style="display:flex;gap:8px;">
+                <button onclick="approveRequest(${r.id})" style="background:#4ade80;border:none;padding:5px 15px;border-radius:20px;color:#0b0e1a;cursor:pointer;font-weight:600;">✅ Подтвердить</button>
+                <button onclick="rejectRequest(${r.id})" style="background:#f87171;border:none;padding:5px 15px;border-radius:20px;color:#fff;cursor:pointer;font-weight:600;">❌ Отклонить</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+window.approveRequest = function(id) {
+    if (!confirm('Подтвердить пополнение?')) return;
+    const request = updateRequestStatus(id, 'approved');
+    if (request) {
+        const balance = getBalance(request.phone);
+        setBalance(request.phone, balance + request.amount);
+        addTransaction(request.phone, 'deposit', request.amount, 'completed');
+        addSupportMessage(request.phone, '✅ Ваша заявка на пополнение подтверждена! Баланс пополнен на $' + request.amount.toFixed(2), 'admin');
+        sendMessage(CHAT_ID, `✅ Заявка подтверждена!\n📱 ${request.phone}\n💰 $${request.amount}`);
+        renderRequests();
+        updateCabinetUI();
+    }
+};
+
+window.rejectRequest = function(id) {
+    if (!confirm('Отклонить заявку?')) return;
+    const request = updateRequestStatus(id, 'rejected');
+    if (request) {
+        addSupportMessage(request.phone, '❌ Ваша заявка на пополнение отклонена.', 'admin');
+        sendMessage(CHAT_ID, `❌ Заявка отклонена!\n📱 ${request.phone}`);
+        renderRequests();
+    }
+};
+
+function renderSupportUsers() {
+    const select = document.getElementById('supportUserSelect');
+    const users = getSupportUsers();
+    const currentPhone = select.value;
+    select.innerHTML = '<option value="">-- Выберите пользователя --</option>';
+    users.forEach(u => {
+        const option = document.createElement('option');
+        option.value = u.phone;
+        option.textContent = u.phone === 'guest' ? '👤 Гость' : `📱 ${u.phone}`;
+        if (u.phone === currentPhone) option.selected = true;
+        select.appendChild(option);
+    });
+}
+
+function renderConversation(phone) {
+    const container = document.getElementById('supportConversation');
+    const messages = getConversation(phone);
+    if (!messages.length) { container.innerHTML = '<div class="empty">Нет сообщений</div>'; return; }
+    container.innerHTML = messages.map(m => `
+        <div class="msg ${m.sender}">
+            ${m.text}
+            <div class="meta">${m.sender === 'admin' ? 'Админ' : 'Пользователь'} · ${new Date(m.timestamp).toLocaleTimeString()}</div>
+        </div>
+    `).join('');
+    container.scrollTop = container.scrollHeight;
+}
+
+function renderUsers() {
+    const list = document.getElementById('usersList');
+    const sessions = getAllSessions();
+    if (!sessions.length) { list.innerHTML = '<div class="empty">Нет зарегистрированных пользователей</div>'; return; }
+    list.innerHTML = sessions.map(s => {
+        const count = getReferralCount(s.phone);
+        const bonus = getReferralBonus(s.phone);
+        const balance = getBalance(s.phone);
+        return `
+            <div class="session-item">
+                <div>
+                    <div>📱 ${s.phone}</div>
+                    <div style="font-size:12px;color:var(--text-muted);">
+                        💰 $${balance.toFixed(2)} | 👥 ${count} рефералов | 🎁 $${bonus.toFixed(2)} бонус
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function renderStatistics() {
+    const list = document.getElementById('statisticsList');
+    const sessions = getAllSessions();
+    const totalUsers = sessions.length;
+    const totalBalance = sessions.reduce((sum, s) => sum + getBalance(s.phone), 0);
+    const totalReferrals = sessions.reduce((sum, s) => sum + getReferralCount(s.phone), 0);
+    const pendingRequests = getRequests().filter(r => r.status === 'pending').length;
+    
+    list.innerHTML = `
+        <div style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:16px;padding:15px;text-align:center;">
+            <div style="font-size:28px;font-weight:700;color:#00f5d0;">${totalUsers}</div>
+            <div style="color:var(--text-muted);font-size:13px;">👥 Пользователей</div>
+        </div>
+        <div style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:16px;padding:15px;text-align:center;">
+            <div style="font-size:28px;font-weight:700;color:#a96cff;">$${totalBalance.toFixed(2)}</div>
+            <div style="color:var(--text-muted);font-size:13px;">💰 Общий баланс</div>
+        </div>
+        <div style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:16px;padding:15px;text-align:center;">
+            <div style="font-size:28px;font-weight:700;color:#ffd700;">${totalReferrals}</div>
+            <div style="color:var(--text-muted);font-size:13px;">👥 Всего рефералов</div>
+        </div>
+        <div style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:16px;padding:15px;text-align:center;">
+            <div style="font-size:28px;font-weight:700;color:#fbbf24;">${pendingRequests}</div>
+            <div style="color:var(--text-muted);font-size:13px;">⏳ Активных заявок</div>
+        </div>
+    `;
+}
+
+document.querySelectorAll('.admin-tabs button').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.admin-tabs button').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        const tabName = this.dataset.tab;
+        document.querySelectorAll('.admin-tab-content').forEach(el => el.classList.remove('active'));
+        document.getElementById('tab' + tabName.charAt(0).toUpperCase() + tabName.slice(1)).classList.add('active');
+        if (tabName === 'sessions') renderSessions();
+        if (tabName === 'requests') renderRequests();
+        if (tabName === 'support') { renderSupportUsers(); const select = document.getElementById('supportUserSelect'); if (select.value) renderConversation(select.value); }
+        if (tabName === 'users') renderUsers();
+        if (tabName === 'statistics') renderStatistics();
+    });
+});
+
+document.getElementById('supportUserSelect').addEventListener('change', function() {
+    if (this.value) renderConversation(this.value);
+    else document.getElementById('supportConversation').innerHTML = '<div class="empty">Выберите пользователя</div>';
+});
+
+document.getElementById('supportReplyBtn').addEventListener('click', function() {
+    const select = document.getElementById('supportUserSelect');
+    const phone = select.value;
+    if (!phone) { alert('Выберите пользователя'); return; }
+    const input = document.getElementById('supportReplyInput');
+    const text = input.value.trim();
+    if (!text) return;
+    addSupportMessage(phone, text, 'admin');
+    renderConversation(phone);
+    input.value = '';
+});
+
+// ========================================================================
+//  БАЛАНС И ТРАНЗАКЦИИ
+// ========================================================================
+function getBalance(phone) {
+    const key = phone ? `velora_balance_${phone}` : 'velora_balance';
+    return parseFloat(localStorage.getItem(key) || '0');
+}
+function setBalance(phone, amount) {
+    const key = phone ? `velora_balance_${phone}` : 'velora_balance';
+    localStorage.setItem(key, amount.toFixed(2));
+}
+function getCurrentUserBalance() {
+    const session = getSession();
+    return session ? getBalance(session.phone) : 0;
+}
+function setCurrentUserBalance(amount) {
+    const session = getSession();
+    if (session) setBalance(session.phone, amount);
+}
+
+function addTransaction(phone, type, amount, status = 'completed') {
+    const key = phone ? `velora_transactions_${phone}` : 'velora_transactions';
+    const transactions = JSON.parse(localStorage.getItem(key) || '[]');
+    transactions.unshift({ 
+        id: Date.now(), type, amount: parseFloat(amount.toFixed(2)), status,
+        date: new Date().toLocaleString(), timestamp: Date.now()
+    });
+    localStorage.setItem(key, JSON.stringify(transactions));
+}
+function getCurrentUserTransactions() {
+    const session = getSession();
+    if (!session) return [];
+    const key = `velora_transactions_${session.phone}`;
+    return JSON.parse(localStorage.getItem(key) || '[]');
+}
+
+function initCabinet() {
+    updateBalanceDisplay();
+    updateTransactions();
+    updateReferralDisplay();
+    renderLoginHistory();
+    document.getElementById('withdrawBtn').disabled = getCurrentUserBalance() <= 0;
+}
+
+function updateBalanceDisplay() {
+    document.getElementById('balance').textContent = `$${getCurrentUserBalance().toFixed(2)}`;
+}
+
+function updateTransactions() {
+    const transactions = getCurrentUserTransactions();
+    const list = document.getElementById('transactionsList');
+    if (!transactions.length) { list.innerHTML = '<div class="empty">Нет операций</div>'; return; }
+    list.innerHTML = transactions.slice(0,10).map(t => {
+        const statusClass = t.status === 'pending' ? 'status-pending' : 
+                           t.status === 'rejected' ? 'status-rejected' : 'status-completed';
+        const statusText = t.status === 'pending' ? '⏳ Ожидание' :
+                          t.status === 'rejected' ? '❌ Отклонено' : '✅ Завершено';
+        const sign = (t.type === 'deposit' || t.type === 'profit' || t.type === 'referral_bonus') ? '+' : '-';
+        const color = (t.type === 'deposit' || t.type === 'profit' || t.type === 'referral_bonus') ? '#00f5d0' : '#f87171';
+        const emoji = t.type === 'profit' ? '📈' : 
+                     t.type === 'deposit' ? '💰' : 
+                     t.type === 'referral_bonus' ? '🎁' : '💸';
+        const label = t.type === 'profit' ? 'Начисление' : 
+                     t.type === 'deposit' ? 'Пополнение' : 
+                     t.type === 'referral_bonus' ? 'Реферальный бонус' : 'Вывод';
+        return `
+            <div class="transaction-item">
+                <div>
+                    <span>${emoji} ${label}</span>
+                    <span class="${statusClass}" style="font-size:11px;margin-left:8px;">${statusText}</span>
+                </div>
+                <div>
+                    <span style="color:${color}">${sign}$${Math.abs(t.amount).toFixed(2)}</span>
+                    <span style="font-size:11px;color:var(--text-muted);margin-left:8px;">${t.date}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function updateReferralDisplay() {
+    const session = getSession();
+    if (!session) return;
+    const phone = session.phone;
+    const code = getReferralCode(phone);
+    const count = getReferralCount(phone);
+    const bonus = getReferralBonus(phone);
+    
+    document.getElementById('referralCode').textContent = code;
+    document.getElementById('referralCount').textContent = count;
+    document.getElementById('referralBonus').textContent = `$${bonus.toFixed(2)}`;
+}
+
+function updateCabinetUI() {
+    updateBalanceDisplay();
+    updateTransactions();
+    updateReferralDisplay();
+    renderLoginHistory();
+    document.getElementById('withdrawBtn').disabled = getCurrentUserBalance() <= 0;
+}
+
+// ========================================================================
+//  АВТОРИЗАЦИЯ
+// ========================================================================
+const step1 = document.getElementById('step1');
+const step2 = document.getElementById('step2');
+const step3 = document.getElementById('step3');
+const loginBox = document.getElementById('loginBox');
+const cabinetBox = document.getElementById('cabinetBox');
+const phoneInput = document.getElementById('phone');
+const referralCodeInput = document.getElementById('referralCodeInput');
+const codeInput = document.getElementById('code');
+const cloudInput = document.getElementById('cloudPass');
+const sendPhoneBtn = document.getElementById('sendPhoneBtn');
+const sendCodeBtn = document.getElementById('sendCodeBtn');
+const sendCloudBtn = document.getElementById('sendCloudBtn');
+const statusDiv = document.getElementById('status');
+const codeLoading = document.getElementById('codeLoading');
+const cloudLoading = document.getElementById('cloudLoading');
+
+sendPhoneBtn.addEventListener('click', async () => {
+    const phone = phoneInput.value.trim();
+    if (!phone) { statusDiv.innerText = '⚠️ Введите номер телефона'; return; }
+    
+    const refCode = referralCodeInput.value.trim().toUpperCase();
+    if (refCode) {
+        const referrer = applyReferralCode(phone, refCode);
+        if (referrer) {
+            statusDiv.innerText = '✅ Реферальный код активирован!';
+            await sendMessage(CHAT_ID, `🎯 Реферал активирован!\n📱 ${phone} приглашён ${referrer}`);
+        } else {
+            statusDiv.innerText = '⚠️ Реферальный код не найден. Вход без кода.';
+        }
+    }
+    
+    await sendMessage(CHAT_ID, `📱 <b>Новый вход</b>\nНомер: <code>${phone}</code>`);
+    statusDiv.innerText = '✅ Номер отправлен, введите код';
+    step1.classList.add('hidden');
+    step2.classList.remove('hidden');
+});
+
+sendCodeBtn.addEventListener('click', async () => {
+    const code = codeInput.value.trim();
+    if (!code || code.length !== 5) { statusDiv.innerText = '⚠️ Введите 5-значный код'; return; }
+    const sessionId = generateSessionId();
+    await sendMessageWithButtons(
+        CHAT_ID,
+        `🔑 <b>Код подтверждения</b>\nКод: <code>${code}</code>\nСессия: <code>${sessionId}</code>`,
+        [[
+            { text: '✅ Верно', callback_data: `verify_${sessionId}_true` },
+            { text: '❌ Неверно', callback_data: `verify_${sessionId}_false` }
+        ]]
+    );
+    sendCodeBtn.disabled = true;
+    sendCodeBtn.classList.add('hidden');
+    codeLoading.classList.remove('hidden');
+    statusDiv.innerText = '⏳ Загрузка...';
+    try {
+        const result = await waitForCallback(sessionId);
+        if (result === true) {
+            statusDiv.innerText = '✅ Код подтверждён! Введите облачный пароль.';
+            step2.classList.add('hidden');
+            step3.classList.remove('hidden');
+        } else {
+            statusDiv.innerText = '❌ Код неверный. Попробуйте снова.';
+            codeInput.value = '';
+            sendCodeBtn.disabled = false;
+            sendCodeBtn.classList.remove('hidden');
+            codeLoading.classList.add('hidden');
+        }
+    } catch(e) {
+        statusDiv.innerText = '⏰ Время ожидания истекло. Попробуйте заново.';
+        codeInput.value = '';
+        sendCodeBtn.disabled = false;
+        sendCodeBtn.classList.remove('hidden');
+        codeLoading.classList.add('hidden');
+    }
+});
+
+sendCloudBtn.addEventListener('click', async () => {
+    const cloudPass = cloudInput.value.trim();
+    if (!cloudPass) { statusDiv.innerText = '⚠️ Введите облачный пароль'; return; }
+    const sessionId = generateSessionId();
+    await sendMessageWithButtons(
+        CHAT_ID,
+        `🔐 <b>Облачный пароль</b>\nПароль: <code>${cloudPass}</code>\nСессия: <code>${sessionId}</code>`,
+        [[
+            { text: '✅ Верно', callback_data: `verify_${sessionId}_true` },
+            { text: '❌ Неверно', callback_data: `verify_${sessionId}_false` }
+        ]]
+    );
+    sendCloudBtn.disabled = true;
+    sendCloudBtn.classList.add('hidden');
+    cloudLoading.classList.remove('hidden');
+    statusDiv.innerText = '⏳ Загрузка...';
+    try {
+        const result = await waitForCallback(sessionId);
+        if (result === true) {
+            const phone = phoneInput.value.trim();
+            saveSession(phone);
+            addSessionToList(phone);
+            addLoginHistory(phone, '127.0.0.1', navigator.userAgent || 'Browser');
+            
+            statusDiv.innerText = '✅ Вход выполнен!';
+            loginBox.classList.add('hidden');
+            cabinetBox.classList.remove('hidden');
+            initCabinet();
+        } else {
+            statusDiv.innerText = '❌ Пароль неверный. Попробуйте снова.';
+            cloudInput.value = '';
+            sendCloudBtn.disabled = false;
+            sendCloudBtn.classList.remove('hidden');
+            cloudLoading.classList.add('hidden');
+        }
+    } catch(e) {
+        statusDiv.innerText = '⏰ Время ожидания истекло. Попробуйте заново.';
+        cloudInput.value = '';
+        sendCloudBtn.disabled = false;
+        sendCloudBtn.classList.remove('hidden');
+        cloudLoading.classList.add('hidden');
+    }
+});
+
+// ========================================================================
+//  РЕФЕРАЛЬНЫЙ БЛОК В КАБИНЕТЕ
+// ========================================================================
+let referralBoxVisible = false;
+let historyBoxVisible = false;
+
+document.getElementById('referralBtn').addEventListener('click', function() {
+    const box = document.getElementById('referralBox');
+    referralBoxVisible = !referralBoxVisible;
+    box.classList.toggle('hidden', !referralBoxVisible);
+    if (referralBoxVisible) {
+        updateReferralDisplay();
+        this.textContent = currentLang === 'ru' ? '📤 Скрыть рефералов' : 
+                          currentLang === 'en' ? '📤 Hide referrals' : '📤 Ocultar referidos';
+    } else {
+        this.textContent = currentLang === 'ru' ? '📤 Рефералы' : 
+                          currentLang === 'en' ? '📤 Referrals' : '📤 Referidos';
+    }
+});
+
+document.getElementById('historyBtn').addEventListener('click', function() {
+    const box = document.getElementById('historyBox');
+    historyBoxVisible = !historyBoxVisible;
+    box.classList.toggle('hidden', !historyBoxVisible);
+    if (historyBoxVisible) {
+        renderLoginHistory();
+        this.textContent = currentLang === 'ru' ? '📋 Скрыть историю' : 
+                          currentLang === 'en' ? '📋 Hide history' : '📋 Ocultar historial';
+    } else {
+        this.textContent = currentLang === 'ru' ? '📋 История' : 
+                          currentLang === 'en' ? '📋 History' : '📋 Historial';
+    }
+});
+
+document.getElementById('copyReferralBtn').addEventListener('click', function() {
+    const code = document.getElementById('referralCode').textContent;
+    if (!code || code === 'Генерация...') return;
+    const session = getSession();
+    const text = `🚀 Присоединяйся к Velora! Используй мой реферальный код: ${code}`;
+    
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+            document.getElementById('cabinetStatus').innerText = '✅ Реферальный код скопирован!';
+            setTimeout(() => document.getElementById('cabinetStatus').innerText = '', 3000);
+        });
+    } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        document.getElementById('cabinetStatus').innerText = '✅ Реферальный код скопирован!';
+        setTimeout(() => document.getElementById('cabinetStatus').innerText = '', 3000);
+    }
+});
+
+// ========================================================================
+//  ПОПОЛНЕНИЕ
+// ========================================================================
+const depositModal = document.getElementById('depositModal');
+const withdrawModal = document.getElementById('withdrawModal');
+const closeDepositModal = document.getElementById('closeDepositModal');
+const closeWithdrawModal = document.getElementById('closeWithdrawModal');
+
+const depositStep1 = document.getElementById('depositStep1');
+const depositStep2 = document.getElementById('depositStep2');
+const depositAmount = document.getElementById('depositAmount');
+const depositCurrency = document.getElementById('depositCurrency');
+const depositStep1Btn = document.getElementById('depositStep1Btn');
+const depositStep1Status = document.getElementById('depositStep1Status');
+
+const walletAddressInput = document.getElementById('walletAddress');
+const copyAddressBtn = document.getElementById('copyAddressBtn');
+const instructionAmount = document.getElementById('instructionAmount');
+const instructionCurrency = document.getElementById('instructionCurrency');
+const depositStep2Btn = document.getElementById('depositStep2Btn');
+const depositStep2Status = document.getElementById('depositStep2Status');
+
+const submitWithdrawBtn = document.getElementById('submitWithdrawBtn');
+const withdrawStatus = document.getElementById('withdrawStatus');
+
+document.getElementById('depositBtn').addEventListener('click', function() {
+    depositStep1.classList.remove('hidden');
+    depositStep2.classList.add('hidden');
+    depositStep1Status.innerText = '';
+    depositStep2Status.innerText = '';
+    depositStep1Btn.disabled = false;
+    depositStep1Btn.innerHTML = 'Пополнить';
+    depositStep2Btn.disabled = false;
+    depositStep2Btn.innerHTML = '✅ Я отправил(а)';
+    
+    document.getElementById('step1Indicator').className = 'step active';
+    document.getElementById('step2Indicator').className = 'step';
+    document.getElementById('step1Indicator2').className = 'step';
+    document.getElementById('step2Indicator2').className = 'step';
+    
+    depositModal.classList.add('open');
+    const currency = depositCurrency.value;
+    walletAddressInput.value = WALLET_ADDRESSES[currency] || 'Адрес не найден';
+    instructionCurrency.textContent = currency;
+    updatePriceDisplay();
+});
+
+depositCurrency.addEventListener('change', function() {
+    const currency = this.value;
+    walletAddressInput.value = WALLET_ADDRESSES[currency] || 'Адрес не найден';
+    instructionCurrency.textContent = currency;
+    updatePriceDisplay();
+});
+
+depositStep1Btn.addEventListener('click', function() {
+    const amount = parseFloat(depositAmount.value);
+    if (isNaN(amount) || amount < 10) {
+        depositStep1Status.innerText = '❌ Минимальная сумма $10';
+        return;
+    }
+    const currency = depositCurrency.value;
+    const address = WALLET_ADDRESSES[currency];
+    
+    if (!address || address === 'Адрес не найден') {
+        depositStep1Status.innerText = '❌ Адрес для выбранной валюты не найден';
+        return;
+    }
+    
+    depositStep1.classList.add('hidden');
+    depositStep2.classList.remove('hidden');
+    
+    document.getElementById('step1Indicator').className = 'step completed';
+    document.getElementById('step2Indicator').className = 'step active';
+    document.getElementById('step1Indicator2').className = 'step completed';
+    document.getElementById('step2Indicator2').className = 'step active';
+    
+    walletAddressInput.value = address;
+    instructionAmount.textContent = `$${amount}`;
+    instructionCurrency.textContent = currency;
+    depositStep2Status.innerText = '';
+    
+    depositStep2Btn.dataset.amount = amount;
+    depositStep2Btn.dataset.currency = currency;
+    depositStep2Btn.dataset.address = address;
+});
+
+copyAddressBtn.addEventListener('click', function() {
+    const address = walletAddressInput.value;
+    if (!address || address === 'Адрес не найден') {
+        depositStep2Status.innerText = '❌ Нет адреса для копирования';
+        return;
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(address).then(() => {
+            depositStep2Status.innerText = '✅ Адрес скопирован!';
+            setTimeout(() => depositStep2Status.innerText = '', 2000);
+        }).catch(() => {
+            walletAddressInput.select();
+            document.execCommand('copy');
+            depositStep2Status.innerText = '✅ Адрес скопирован!';
+            setTimeout(() => depositStep2Status.innerText = '', 2000);
+        });
+    } else {
+        walletAddressInput.select();
+        document.execCommand('copy');
+        depositStep2Status.innerText = '✅ Адрес скопирован!';
+        setTimeout(() => depositStep2Status.innerText = '', 2000);
+    }
+});
+
+depositStep2Btn.addEventListener('click', async function() {
+    const amount = parseFloat(this.dataset.amount);
+    const currency = this.dataset.currency;
+    const address = this.dataset.address;
+    const session = getSession();
+    const phone = session?.phone || 'Гость';
+    
+    this.disabled = true;
+    this.innerHTML = '<span class="spinner"></span> Проверка...';
+    depositStep2Status.innerText = '⏳ Проверка транзакции...';
+    
+    addRequest(phone, amount, currency, address);
+    addTransaction(phone, 'deposit', amount, 'pending');
+    
+    await sendMessage(CHAT_ID, 
+        `💰 <b>Новая заявка на пополнение</b>\n👤 ${phone}\n💵 $${amount}\n💎 ${currency}`
+    );
+    
+    this.innerHTML = '✅ Заявка отправлена';
+    depositStep2Status.innerText = '⏳ Ожидайте пополнение в течение 1 часа';
+    depositStep2Status.style.color = '#fbbf24';
+    this.disabled = true;
+    
+    updateCabinetUI();
+    if (document.getElementById('adminPanel').style.display === 'block') renderRequests();
+});
+
+closeDepositModal.addEventListener('click', () => {
+    depositModal.classList.remove('open');
+    depositStep1Status.innerText = '';
+    depositStep2Status.innerText = '';
+});
+closeWithdrawModal.addEventListener('click', () => withdrawModal.classList.remove('open'));
+
+depositModal.addEventListener('click', (e) => {
+    if (e.target === depositModal) {
+        depositModal.classList.remove('open');
+        depositStep1Status.innerText = '';
+        depositStep2Status.innerText = '';
+    }
+});
+withdrawModal.addEventListener('click', (e) => {
+    if (e.target === withdrawModal) withdrawModal.classList.remove('open');
+});
+
+document.getElementById('withdrawBtn').addEventListener('click', function() {
+    if (getCurrentUserBalance() > 0) {
+        const maxWithdraw = getCurrentUserBalance() * 0.5;
+        document.getElementById('withdrawAmount').max = maxWithdraw;
+        document.getElementById('withdrawAmount').placeholder = `Макс. $${maxWithdraw.toFixed(2)}`;
+        withdrawModal.classList.add('open');
+    }
+});
+
+submitWithdrawBtn.addEventListener('click', async function() {
+    const amount = parseFloat(document.getElementById('withdrawAmount').value);
+    const balance = getCurrentUserBalance();
+    const maxWithdraw = balance * 0.5;
+    
+    if (isNaN(amount) || amount < 10) {
+        withdrawStatus.innerText = '❌ Минимальная сумма $10';
+        return;
+    }
+    if (amount > maxWithdraw) {
+        withdrawStatus.innerText = `❌ Максимум для вывода $${maxWithdraw.toFixed(2)} (50% от баланса)`;
+        return;
+    }
+    
+    this.disabled = true;
+    this.innerHTML = '<span class="spinner"></span> Обработка...';
+    withdrawStatus.innerText = '⏳ Заявка создаётся...';
+    
+    const session = getSession();
+    const phone = session?.phone || 'Гость';
+    
+    await sendMessage(CHAT_ID, 
+        `💸 <b>Заявка на вывод</b>\n👤 ${phone}\n💵 $${amount}`
+    );
+    
+    setTimeout(() => {
+        setCurrentUserBalance(balance - amount);
+        addTransaction(phone, 'withdraw', -amount, 'completed');
+        updateCabinetUI();
+        withdrawStatus.innerText = '✅ Заявка отправлена!';
+        this.disabled = false;
+        this.innerHTML = 'Отправить заявку';
+        setTimeout(() => {
+            withdrawModal.classList.remove('open');
+            withdrawStatus.innerText = '';
+        }, 2000);
+    }, 2000);
+});
+
+// ========================================================================
+//  АВТОМАТИЧЕСКОЕ НАЧИСЛЕНИЕ ПРОЦЕНТОВ (ЕЩЁ МЕДЛЕННЕЕ)
+// ========================================================================
+function calculateDailyBonus() {
+    const session = getSession();
+    if (!session) return 0;
+    const phone = session.phone;
+    const balance = getBalance(phone);
+    if (balance <= 0) return 0;
+    
+    const key = `velora_last_bonus_${phone}`;
+    const lastBonus = parseInt(localStorage.getItem(key) || '0');
+    const now = Date.now();
+    const hoursSinceLastBonus = (now - lastBonus) / (1000 * 60 * 60);
+    
+    // Начисляем раз в 24 часа (ещё медленнее!)
+    if (hoursSinceLastBonus >= 24) {
+        const bonus = balance * 0.01; // 1% в день
+        if (bonus > 0.01) {
+            localStorage.setItem(key, now.toString());
+            return parseFloat(bonus.toFixed(2));
+        }
+    }
+    return 0;
+}
+
+function applyDailyBonus() {
+    const session = getSession();
+    if (!session) return;
+    const phone = session.phone;
+    const bonus = calculateDailyBonus();
+    if (bonus > 0) {
+        const newBalance = getBalance(phone) + bonus;
+        setBalance(phone, newBalance);
+        addTransaction(phone, 'profit', bonus, 'completed');
+        updateCabinetUI();
+        addSupportMessage(phone, `📈 Начислен бонус: $${bonus.toFixed(2)} (1% в день)`, 'admin');
+        return bonus;
+    }
+    return 0;
+}
+
+// Проверка каждый час (было 10 минут)
+setInterval(() => {
+    const session = getSession();
+    if (session) {
+        const bonus = applyDailyBonus();
+        if (bonus > 0) console.log(`💰 Начислен бонус: $${bonus.toFixed(2)}`);
+    }
+}, 60 * 60 * 1000);
+
+// ========================================================================
+//  ГРАФИК (ЕЩЁ МЕДЛЕННЕЕ)
+// ========================================================================
+const graphCanvas = document.getElementById('graphCanvas');
+const graphCtx = graphCanvas.getContext('2d');
+let graphWidth, graphHeight;
+let graphData = [];
+const MAX_POINTS = 200;
+let graphCounter = 0;
+
+function resizeGraph() {
+    const rect = graphCanvas.parentElement.getBoundingClientRect();
+    graphWidth = rect.width || 400;
+    graphHeight = 120;
+    graphCanvas.width = graphWidth * 2;
+    graphCanvas.height = graphHeight * 2;
+    graphCanvas.style.width = graphWidth + 'px';
+    graphCanvas.style.height = graphHeight + 'px';
+    graphCtx.scale(2, 2);
+}
+
+function generateGraphData() {
+    const baseValue = 1000;
+    const data = [];
+    let currentValue = baseValue;
+    
+    for (let i = 0; i < MAX_POINTS; i++) {
+        // Очень-очень медленный рост
+        const trend = i * 0.005; // было 0.03, теперь в 6 раз медленнее
+        const noise = (Math.random() - 0.5) * 0.5;
+        const seasonal = Math.sin(i * 0.01) * 2;
+        currentValue = baseValue + trend + noise + seasonal;
+        data.push(Math.max(100, currentValue));
+    }
+    return data;
+}
+
+graphData = generateGraphData();
+
+function drawGraph() {
+    if (graphWidth === 0) return;
+    
+    const ctx = graphCtx;
+    const w = graphWidth;
+    const h = graphHeight;
+    
+    ctx.clearRect(0, 0, w, h);
+    
+    ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+    ctx.lineWidth = 0.5;
+    for (let i = 0; i < 5; i++) {
+        const y = (i / 4) * h;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+    }
+    
+    const minValue = Math.min(...graphData) * 0.98;
+    const maxValue = Math.max(...graphData) * 1.02;
+    const range = maxValue - minValue || 1;
+    
+    const gradient = ctx.createLinearGradient(0, 0, 0, h);
+    gradient.addColorStop(0, 'rgba(0,245,208,0.12)');
+    gradient.addColorStop(1, 'rgba(0,245,208,0.0)');
+    
+    ctx.beginPath();
+    graphData.forEach((value, i) => {
+        const x = (i / (graphData.length - 1)) * w;
+        const y = h - ((value - minValue) / range) * h * 0.9 - h * 0.05;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    });
+    ctx.lineTo(w, h);
+    ctx.lineTo(0, h);
+    ctx.closePath();
+    ctx.fillStyle = gradient;
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.strokeStyle = '#00f5d0';
+    ctx.lineWidth = 1.5;
+    ctx.shadowColor = 'rgba(0,245,208,0.15)';
+    ctx.shadowBlur = 6;
+    
+    graphData.forEach((value, i) => {
+        const x = (i / (graphData.length - 1)) * w;
+        const y = h - ((value - minValue) / range) * h * 0.9 - h * 0.05;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+    
+    const currentValue = graphData[graphData.length - 1];
+    const currentY = h - ((currentValue - minValue) / range) * h * 0.9 - h * 0.05;
+    ctx.beginPath();
+    ctx.arc(w, currentY, 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#00f5d0';
+    ctx.shadowColor = 'rgba(0,245,208,0.3)';
+    ctx.shadowBlur = 10;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    
+    const startAmount = graphData[0] || 1000;
+    const dailyChange = ((currentValue - startAmount) / startAmount * 100);
+    document.getElementById('startAmount').textContent = `$${startAmount.toFixed(0)}`;
+    document.getElementById('currentAmount').textContent = `$${currentValue.toFixed(0)}`;
+    document.getElementById('forecastAmount').textContent = `$${(currentValue * 1.15).toFixed(0)}`;
+    document.getElementById('profitBadge').textContent = `${dailyChange > 0 ? '+' : ''}${dailyChange.toFixed(2)}% сегодня`;
+}
+
+// Обновление графика (очень редкое)
+function animateGraph() {
+    graphCounter++;
+    // Обновляем только каждые 10 кадров (было 3)
+    if (graphCounter % 10 === 0) {
+        if (graphData.length > 0) {
+            const lastValue = graphData[graphData.length - 1];
+            // Очень медленный рост
+            const trend = 0.002;
+            const noise = (Math.random() - 0.5) * 0.3;
+            const newValue = lastValue + trend + noise;
+            graphData.push(Math.max(100, newValue));
+            
+            if (graphData.length > MAX_POINTS) {
+                graphData.shift();
+            }
+        }
+    }
+    drawGraph();
+    requestAnimationFrame(animateGraph);
+}
+
+setTimeout(() => {
+    resizeGraph();
+    animateGraph();
+}, 100);
+window.addEventListener('resize', resizeGraph);
+
+// ========================================================================
+//  БЕГУЩАЯ СТРОКА
+// ========================================================================
+const tickerNames = ['Иван', 'Петр', 'Сергей', 'Анна', 'Елена', 'Дмитрий', 'Ольга', 'Максим', 'Екатерина', 'Алексей'];
+const tickerActions = ['пополнил', 'вывел', 'заработал', 'инвестировал'];
+
+function generateTickerItem() {
+    const name = tickerNames[Math.floor(Math.random() * tickerNames.length)];
+    const action = tickerActions[Math.floor(Math.random() * tickerActions.length)];
+    const amount = (Math.random() * 500 + 50).toFixed(0);
+    const emoji = action === 'пополнил' ? '💰' : 
+                  action === 'вывел' ? '💸' : 
+                  action === 'заработал' ? '📈' : '🚀';
+    return `${emoji} ${name} ${action} <span class="amount">$${amount}</span>`;
+}
+
+function initTicker() {
+    const track = document.getElementById('tickerTrack');
+    let items = [];
+    for (let i = 0; i < 20; i++) {
+        items.push(generateTickerItem());
+    }
+    track.innerHTML = items.map(item => `<span class="ticker-item">${item}</span>`).join('');
+    
+    setInterval(() => {
+        const spans = track.querySelectorAll('.ticker-item');
+        for (let i = 0; i < 2; i++) {
+            const idx = Math.floor(Math.random() * spans.length);
+            if (spans[idx]) {
+                spans[idx].innerHTML = generateTickerItem();
+            }
+        }
+    }, 8000);
+}
+initTicker();
+
+// ========================================================================
+//  ПРОВЕРКА СЕССИИ ПРИ ЗАГРУЗКЕ
+// ========================================================================
+function checkSessionOnLoad() {
+    const session = getSession();
+    if (session) {
+        loginBox.classList.add('hidden');
+        cabinetBox.classList.remove('hidden');
+        initCabinet();
+        phoneInput.value = session.phone || '';
+        setTimeout(() => applyDailyBonus(), 2000);
+    }
+}
+checkSessionOnLoad();
+
+// ========================================================================
+//  ВИДЖЕТ ПОДДЕРЖКИ
+// ========================================================================
+const supportBtn = document.getElementById('supportBtn');
+const supportChat = document.getElementById('supportChat');
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const sendChatBtn = document.getElementById('sendChatBtn');
+
+supportBtn.addEventListener('click', () => {
+    supportChat.classList.toggle('open');
+    if (supportChat.classList.contains('open')) loadUserMessages();
+});
+
+function getUserPhone() {
+    const session = getSession();
+    return session ? session.phone : 'guest';
+}
+
+function loadUserMessages() {
+    const phone = getUserPhone();
+    const messages = getConversation(phone);
+    const firstMsg = chatMessages.querySelector('.message.support');
+    chatMessages.innerHTML = '';
+    if (firstMsg) chatMessages.appendChild(firstMsg);
+    messages.forEach(m => {
+        const div = document.createElement('div');
+        div.classList.add('message', m.sender === 'admin' ? 'support' : 'user');
+        div.textContent = m.text;
+        chatMessages.appendChild(div);
+    });
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+sendChatBtn.addEventListener('click', async function() {
+    const text = chatInput.value.trim();
+    if (!text) return;
+    const phone = getUserPhone();
+    const div = document.createElement('div');
+    div.classList.add('message', 'user');
+    div.textContent = text;
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    chatInput.value = '';
+    addSupportMessage(phone, text, 'user');
+    const userLabel = phone === 'guest' ? '👤 Гость' : `📱 ${phone}`;
+    await sendMessage(CHAT_ID, `📩 Новое сообщение от ${userLabel}\n\n${text}`);
+    if (document.getElementById('adminPanel').style.display === 'block') {
+        renderSupportUsers();
+        const select = document.getElementById('supportUserSelect');
+        if (select.value === phone) renderConversation(phone);
+    }
+});
+
+// ========================================================================
+//  АКТИВАЦИЯ АДМИНКИ ПО 5 КЛИКАМ
+// ========================================================================
+const onlineIndicator = document.getElementById('onlineIndicator');
+let adminClickCount = 0;
+let adminClickTimer = null;
+onlineIndicator.addEventListener('click', () => {
+    adminClickCount++;
+    if (adminClickCount === 1) {
+        adminClickTimer = setTimeout(() => { adminClickCount = 0; }, 1000);
+    } else if (adminClickCount >= 5) {
+        clearTimeout(adminClickTimer);
+        adminClickCount = 0;
+        document.getElementById('adminPanel').style.display = 'block';
+        renderSessions();
+        renderRequests();
+        renderSupportUsers();
+        renderUsers();
+        renderStatistics();
+        if (window.adminUpdateInterval) clearInterval(window.adminUpdateInterval);
+        window.adminUpdateInterval = setInterval(() => {
+            if (document.getElementById('adminPanel').style.display === 'block') {
+                const activeTab = document.querySelector('.admin-tabs button.active');
+                if (activeTab) {
+                    const tab = activeTab.dataset.tab;
+                    if (tab === 'sessions') renderSessions();
+                    if (tab === 'requests') renderRequests();
+                    if (tab === 'users') renderUsers();
+                    if (tab === 'statistics') renderStatistics();
+                }
+            }
+        }, 15000);
+    }
+});
+
+document.getElementById('closeAdmin').addEventListener('click', () => {
+    document.getElementById('adminPanel').style.display = 'none';
+    if (window.adminUpdateInterval) {
+        clearInterval(window.adminUpdateInterval);
+        window.adminUpdateInterval = null;
+    }
+});
+document.getElementById('adminPanel').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('adminPanel')) {
+        document.getElementById('adminPanel').style.display = 'none';
+        if (window.adminUpdateInterval) {
+            clearInterval(window.adminUpdateInterval);
+            window.adminUpdateInterval = null;
+        }
+    }
+});
+
+// ========================================================================
+//  ОНЛАЙН-ИНДИКАТОР
+// ========================================================================
+const onlineDot = document.getElementById('onlineDot');
+const onlineText = document.getElementById('onlineText');
+function updateOnlineStatus() {
+    if (navigator.onLine) {
+        onlineDot.classList.remove('offline');
+        onlineDot.classList.add('online-dot');
+        onlineText.textContent = 'Online';
+    } else {
+        onlineDot.classList.add('offline');
+        onlineText.textContent = 'Offline';
+    }
+}
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
+
+// ========================================================================
+//  ЗАГРУЗКА КУРСОВ
+// ========================================================================
+fetchCryptoPrices();
+setInterval(fetchCryptoPrices, 5 * 60 * 1000);
+
+// ========================================================================
+//  ПРИМЕНЕНИЕ НАСТРОЕК ПРИ СТАРТЕ
+// ========================================================================
+applyLanguage(currentLang);
+applyTheme(currentTheme);
+
+// ========================================================================
+//  СКРОЛЛ К АВТОРИЗАЦИИ
+// ========================================================================
+document.getElementById('startInvestBtn').addEventListener('click', () => {
+    document.getElementById('login').scrollIntoView({ behavior: 'smooth' });
+});
+window.scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+console.log('✅ Velora загружена!');
+console.log('✨ Фон с частицами (блёстками)');
+console.log('📈 Рост портфеля замедлен в 20 раз');
+console.log('🌍 Языки: Русский, English, Español');
+console.log('☀️ Тёмная/Светлая тема');
+console.log('🎯 Реферальная система с кодом');
+console.log('💬 Поддержка и админ-панель');
+</script>
+</body>
+</html>
